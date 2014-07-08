@@ -50,15 +50,15 @@ public class Suscriptor implements ExceptionListener{
     
     public void leerMensaje() throws JMSException{
         // Wait for a message
-        Message message = consumer.receive(1000);
+        Message message = consumer.receive();
                               
         if (message instanceof TextMessage) {
             TextMessage textMessage = (TextMessage) message;
             String text = textMessage.getText();
             System.out.println("Received: " + text);
-        } else {
+        }else{
             System.out.println("Received: " + message);
-         }
+        }
     }
     
     public void cerrarConexion() throws JMSException{
