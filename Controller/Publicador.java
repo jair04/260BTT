@@ -34,7 +34,7 @@ public class Publicador{
         nombreTema: nombre del tema donde se estaran publicando los temas
         tipo: tipo del mensaje por cola o tema 
     */
-    public Publicador(String ip, String nombreTema, int tipo) throws JMSException{        
+    public Publicador(String ip, String nombreTema) throws JMSException{        
         // Create a ConnectionFactory
         connectionFactory = new ActiveMQConnectionFactory("vm://"+ip+"");
         
