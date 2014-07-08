@@ -10,6 +10,27 @@ package DAO;
  *
  * @author Jair
  */
-public class Piloto {
+public class Piloto extends Persona{
+    private String matricula;
+
+    public Piloto() {
+        super();
+        this.matricula=null;
+    }
+
+    public Piloto(String matricula, String nombre, String apellidoPaterno, String apellidoMaterno, int edad) {
+        super(nombre, apellidoPaterno, apellidoMaterno, edad);
+        this.matricula = matricula;
+    }
+
+    public String getMatricula() {
+        return matricula;
+    }
+
+    public void setMatricula(String matricula) {
+        this.matricula = matricula;
+    }
+    
+    
     
 }

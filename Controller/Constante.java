@@ -11,6 +11,6 @@ package Controller;
  * @author Jair
  */
 public interface Constante {
-    final int COLA = 0;
-    final int TEMA = 1;
+    final int MSN_COLA = 0;
+    final int MSN_TEMA = 1;
 }

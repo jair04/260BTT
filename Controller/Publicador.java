@@ -46,9 +46,9 @@ public class Publicador{
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
         // Create the destination (Topic or Queue)        
-        if(tipo==Constante.TEMA){
+        if(tipo==Constante.MSN_TEMA){
             destination = session.createTopic(nombreTema);
-        }else if(tipo==Constante.COLA){
+        }else if(tipo==Constante.MSN_COLA){
             destination = session.createQueue(nombreTema);
         }
         

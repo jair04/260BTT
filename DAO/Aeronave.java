@@ -11,5 +11,6 @@ package DAO;
  * @author Jair
  */
 public class Aeronave {
-    //primera actualizaion
+    private String ip;
+
 }

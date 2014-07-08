@@ -42,9 +42,9 @@ public class Consumidor implements ExceptionListener{
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
  
         // Create the destination (Topic or Queue)
-        if(tipo==Constante.TEMA){
+        if(tipo==Constante.MSN_TEMA){
             destination = session.createTopic(nombreTema);
-        }else if(tipo==Constante.COLA){
+        }else if(tipo==Constante.MSN_COLA){
             destination = session.createQueue(nombreTema);
         }
  
@@ -72,8 +72,8 @@ public class Consumidor implements ExceptionListener{
         connection.close();
     }
  
-        public synchronized void onException(JMSException ex) {
-            System.out.println("JMS Exception occured.  Shutting down client.");
-        }
+    public synchronized void onException(JMSException ex) {
+        System.out.println("JMS Exception occured.  Shutting down client.");
     }
+}
 

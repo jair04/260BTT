@@ -18,9 +18,9 @@ public class Main{
         /*
         // Ejemplo tipo Tema
         
-        Publicador comandoCentral = new Publicador("189.245.241.120","test",Constante.TEMA); 
-        Consumidor aeronave1 = new Consumidor("189.245.241.120","test",Constante.TEMA);
-        Consumidor aeronave2 = new Consumidor("189.245.241.120","test",Constante.TEMA);
+        Publicador comandoCentral = new Publicador("189.245.241.120","test",Constante.MSN_TEMA); 
+        Consumidor aeronave1 = new Consumidor("189.245.241.120","test",Constante.MSN_TEMA);
+        Consumidor aeronave2 = new Consumidor("189.245.241.120","test",Constante.MSN_TEMA);
         
         comandoCentral.publicarMensaje("hola como estan");
         aeronave1.leerMensaje();
@@ -44,11 +44,11 @@ public class Main{
         */
         
         
-        /*
+        
         //Ejemplo tipo Cola
-        Publicador aeronave1 = new Publicador("189.245.241.120","test",Constante.COLA); 
-        Publicador aeronave2 = new Publicador("189.245.241.120","test",Constante.COLA);
-        Consumidor comandoCentral = new Consumidor("189.245.241.120","test",Constante.COLA);
+        Publicador aeronave1 = new Publicador("189.245.241.120","test",Constante.MSN_COLA); 
+        Publicador aeronave2 = new Publicador("189.245.241.120","test",Constante.MSN_COLA);
+        Consumidor comandoCentral = new Consumidor("189.245.241.120","test",Constante.MSN_COLA);
         
         aeronave1.publicarMensaje("aeronave1");
         aeronave2.publicarMensaje("aeronave2");
@@ -59,6 +59,6 @@ public class Main{
         aeronave1.cerrarConexion();
         aeronave2.cerrarConexion();
         comandoCentral.cerrarConexion();
-        */
+        
     }    
 }
