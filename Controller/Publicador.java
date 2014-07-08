@@ -26,7 +26,7 @@ public class Publicador{
     private final ActiveMQConnectionFactory connectionFactory;
     private final Connection connection;
     private final Session session;
-    private final Destination destination;
+    private Destination destination;
     private final MessageProducer producer;
 
     /*
@@ -34,7 +34,7 @@ public class Publicador{
         nombreTema: nombre del tema donde se estaran publicando los temas
         tipo: tipo del mensaje por cola o tema 
     */
-    public Publicador(String ip, String nombreTema) throws JMSException{        
+    public Publicador(String ip, String nombreTema, int tipo) throws JMSException{        
         // Create a ConnectionFactory
         connectionFactory = new ActiveMQConnectionFactory("vm://"+ip+"");
         
@@ -45,8 +45,12 @@ public class Publicador{
         // Create a Session
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-        // Create the destination (Topic or Queue)
-        destination = session.createTopic(nombreTema);
+        // Create the destination (Topic or Queue)        
+        if(tipo==Constante.TEMA){
+            destination = session.createTopic(nombreTema);
+        }else if(tipo==Constante.COLA){
+            destination = session.createQueue(nombreTema);
+        }
         
         //Create a MessageProducer from the Session to the Topic or Queue
         producer = session.createProducer(destination);

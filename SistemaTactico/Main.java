@@ -2,7 +2,7 @@ package SistemaTactico;
 
 import Controller.Constante;
 import Controller.Publicador;
-import Controller.Suscriptor;
+import Controller.Consumidor;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -15,9 +15,12 @@ import java.net.URL;
 public class Main{
     public static void main(String args[]) throws Exception{
         
-        Publicador comandoCentral = new Publicador("189.245.241.120","test"); 
-        Suscriptor aeronave1 = new Suscriptor("189.245.241.120","test");
-        Suscriptor aeronave2 = new Suscriptor("189.245.241.120","test");
+        /*
+        // Ejemplo tipo Tema
+        
+        Publicador comandoCentral = new Publicador("189.245.241.120","test",Constante.TEMA); 
+        Consumidor aeronave1 = new Consumidor("189.245.241.120","test",Constante.TEMA);
+        Consumidor aeronave2 = new Consumidor("189.245.241.120","test",Constante.TEMA);
         
         comandoCentral.publicarMensaje("hola como estan");
         aeronave1.leerMensaje();
@@ -29,6 +32,8 @@ public class Main{
         comandoCentral.cerrarConexion();
         aeronave1.cerrarConexion();
         aeronave2.cerrarConexion();       
+        */
+        
         
         //obtener ip externa
         /*
@@ -36,6 +41,24 @@ public class Main{
         BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
         String ip = in.readLine();
         System.out.println(ip);
+        */
+        
+        
+        /*
+        //Ejemplo tipo Cola
+        Publicador aeronave1 = new Publicador("189.245.241.120","test",Constante.COLA); 
+        Publicador aeronave2 = new Publicador("189.245.241.120","test",Constante.COLA);
+        Consumidor comandoCentral = new Consumidor("189.245.241.120","test",Constante.COLA);
+        
+        aeronave1.publicarMensaje("aeronave1");
+        aeronave2.publicarMensaje("aeronave2");
+        
+        comandoCentral.leerMensaje();
+        comandoCentral.leerMensaje();
+        
+        aeronave1.cerrarConexion();
+        aeronave2.cerrarConexion();
+        comandoCentral.cerrarConexion();
         */
     }    
 }

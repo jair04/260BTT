@@ -20,15 +20,15 @@ import org.apache.activemq.ActiveMQConnectionFactory;
  *
  * @author Jair
  */
-public class Suscriptor implements ExceptionListener{
+public class Consumidor implements ExceptionListener{
     
     private final ActiveMQConnectionFactory connectionFactory;
     private final Connection connection;
     private final Session session;
-    private final Destination destination;
+    private Destination destination;
     private final MessageConsumer consumer;
     
-    public Suscriptor(String ip, String nombreTema) throws JMSException{
+    public Consumidor(String ip, String nombreTema,int tipo) throws JMSException{
         // Create a ConnectionFactory
         connectionFactory = new ActiveMQConnectionFactory("vm://"+ip+"");
  
@@ -42,7 +42,11 @@ public class Suscriptor implements ExceptionListener{
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
  
         // Create the destination (Topic or Queue)
-        destination = session.createTopic(nombreTema);
+        if(tipo==Constante.TEMA){
+            destination = session.createTopic(nombreTema);
+        }else if(tipo==Constante.COLA){
+            destination = session.createQueue(nombreTema);
+        }
  
         // Create a MessageConsumer from the Session to the Topic or Queue
         consumer = session.createConsumer(destination);
