@@ -29,7 +29,12 @@ public class Publicador{
     private final Destination destination;
     private final MessageProducer producer;
 
-    public Publicador(String ip, String nombreTema) throws JMSException{        
+    /*
+        ip: ip donde se esta ejecutando la aplicacion del comando central
+        nombreTema: nombre del tema donde se estaran publicando los temas
+        tipo: tipo del mensaje por cola o tema 
+    */
+    public Publicador(String ip, String nombreTema, int tipo) throws JMSException{        
         // Create a ConnectionFactory
         connectionFactory = new ActiveMQConnectionFactory("vm://"+ip+"");
         
