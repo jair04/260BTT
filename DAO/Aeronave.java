@@ -92,8 +92,5 @@ public class Aeronave {
 
     public void setMensaje(Mensaje mensaje) {
         this.mensaje = mensaje;
-    }
-
-    
-    
+    } 
 }
