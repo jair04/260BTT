@@ -6,10 +6,16 @@
 
 package DAO;
 
+import java.util.List;
+
+
 /**
  *
  * @author Jair
  */
 public class Mision {
     
+    //Aeronaves que estan en la mision
+    private List<Aeronave> aeronaves;
+            
 }

@@ -11,6 +11,14 @@ package Controller;
  * @author Jair
  */
 public interface Constante {
-    final int MSN_COLA = 0;
-    final int MSN_TEMA = 1;
+    
+    //Definir el tipo de mensaje que se recibe y/o envia 
+    final int MSN_COLA = 0;  
+    final int MSN_TEMA = 1;  
+    
+    //Define el tipo de peticion que realiza el comando o la aeronave
+     final int CONECTAR_AERONAVE = 2; 
+     final int RECHAZAR_AERONAVE = 3;
+     final int ACEPTAR_AERONAVE = 4;
+     final int ACTULIZAR_INFO_AERONAVE = 5;
 }
