@@ -10,6 +10,8 @@ package DAO;
  *
  * @author Jair
  */
-public class Comandante {
+
+//Clase temporal
+public class Comandante extends Persona{
     
 }
