@@ -6,7 +6,7 @@
 
 package DAO;
 
-import ArcGIS_SIG.GeoPositionListener;
+import SIG_ArcGIS.GeoPositionListener;
 import com.esri.core.gps.FileGPSWatcher;
 import com.esri.core.gps.GPSEventListener;
 import com.esri.core.gps.GPSException;
