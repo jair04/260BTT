@@ -20,5 +20,5 @@ public interface Constante {
      final int CONECTAR_AERONAVE = 2; 
      final int RECHAZAR_AERONAVE = 3;
      final int ACEPTAR_AERONAVE = 4;
-     final int ACTULIZAR_INFO_AERONAVE = 5;
+     final int ACTULIZAR_AERONAVE = 5;
 }

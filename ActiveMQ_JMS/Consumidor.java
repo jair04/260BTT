@@ -4,8 +4,9 @@
  * and open the template in the editor.
  */
 
-package Controller;
+package ActiveMQ_JMS;
 
+import Controller.Constante;
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;

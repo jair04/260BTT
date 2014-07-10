@@ -6,7 +6,7 @@
 
 package DAO;
 
-import ArcGIS.GeoPositionListener;
+import ArcGIS_SIG.GeoPositionListener;
 import com.esri.core.gps.FileGPSWatcher;
 import com.esri.core.gps.GPSEventListener;
 import com.esri.core.gps.GPSException;
@@ -28,7 +28,10 @@ public class Aeronave {
     /*Almacena informacion geografica de una aeronave en un punto especifivo*/
     private Posicion posicion;
     
-    //variable que almacena el tipo de peticion
+    /*
+        variable que almacena el tipo de peticion:
+        CONECTAR_AERONAVE/ ACTUALIZAR_AERONAVE/ AERONAVE_RECHAZADA
+    */
     private int tipo_peticion;
     
     /*Mensaje que sera enviado de la aeronave al comando central */
@@ -104,14 +107,34 @@ public class Aeronave {
         this.mensaje = mensaje;
     } 
 
+    public String getIpComando() {
+        return ipComando;
+    }
+
+    public void setIpComando(String ipComando) {
+        this.ipComando = ipComando;
+    }
+    
+
     @Override
     public String toString() {
-        return "Aeronave{" + "ip=" + ipAeronave + ", matricula=" + matricula + ", piloto=" + piloto + ", posicion=" + posicion + ", tipo_peticion=" + tipo_peticion + ", mensaje=" + mensaje + '}';
+        return "Aeronave{" + "ip=" 
+                           + ipAeronave 
+                           + ", matricula=" 
+                           + matricula 
+                           + ", piloto=" 
+                           + piloto 
+                           + ", posicion=" 
+                           + posicion 
+                           + ", tipo_peticion=" 
+                           + tipo_peticion 
+                           + ", mensaje=" 
+                           + mensaje + '}';
     }
 
     @Override
     public int hashCode() {
-        return this.ipAeronave.hashCode()+this.matricula.hashCode(); //To change body of generated methods, choose Tools | Templates.
+        return this.ipAeronave.hashCode()+this.matricula.hashCode(); 
     }
 
     @Override
@@ -133,10 +156,17 @@ public class Aeronave {
     }
     
     //leer sentencia NMEA 0183 de archivo TXT
-    public void leerGPSTXT() throws GPSException{
+    public void leerGPSTXT() throws GPSException{    
+        //Ruta absoluta del archivo
+        String ruta = getClass().getResource("/Archivos/GPS/GPSReader.txt").toString();
+        ruta = ruta.substring(6,ruta.length());
+        
+        /*
+            Lectura del GPS y envio de la informacion
+            actualizada al comando central "Interfaz:GeoPositionListener.java"
+        */
         GPSEventListener gpsListener = new GeoPositionListener(this);
-        IGPSWatcher gpsWatcher = new FileGPSWatcher("C:\\Users\\Jair\\Documents\\NetBeansProjects\\SistemaTactico_Repositorio\\Archivos\\GPS\\GPSReader.txt"
-                ,500,true,gpsListener);
+        IGPSWatcher gpsWatcher = new FileGPSWatcher(ruta,500,true,gpsListener);
         gpsWatcher.start();
     }
     

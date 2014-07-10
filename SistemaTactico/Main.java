@@ -1,8 +1,8 @@
 package SistemaTactico;
 
 import Controller.Constante;
-import Controller.Consumidor;
-import Controller.Publicador;
+import ActiveMQ_JMS.Consumidor;
+import ActiveMQ_JMS.Publicador;
 import DAO.Aeronave;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

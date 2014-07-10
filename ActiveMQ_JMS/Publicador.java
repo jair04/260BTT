@@ -4,12 +4,13 @@
  * and open the template in the editor.
  */
 
-package Controller;
+package ActiveMQ_JMS;
 
 /**
  *
  * @author Jair
  */
+import Controller.Constante;
 import org.apache.activemq.ActiveMQConnectionFactory;
  
 import javax.jms.Connection;
