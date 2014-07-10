@@ -6,6 +6,13 @@
 
 package DAO;
 
+import ArcGIS.GeoPositionListener;
+import com.esri.core.gps.FileGPSWatcher;
+import com.esri.core.gps.GPSEventListener;
+import com.esri.core.gps.GPSException;
+import com.esri.core.gps.IGPSWatcher;
+import java.util.Objects;
+
 /**
  *
  * @author Jair
@@ -13,7 +20,8 @@ package DAO;
 public class Aeronave {
     
     //informacion general
-    private String ip;
+    private String ipAeronave;
+    private String ipComando;
     private String matricula;
     private Piloto piloto;
     
@@ -30,15 +38,17 @@ public class Aeronave {
     public Aeronave() {
     }
 
-    public Aeronave(String ip, String matricula, Piloto piloto, int tipo_peticion) {
-        this.ip = ip;
+    public Aeronave(String ipAeronave,String ipComando, String matricula, Piloto piloto, int tipo_peticion) {
+        this.ipAeronave = ipAeronave;
+        this.ipComando = ipComando;
         this.matricula = matricula;
         this.piloto = piloto;
         this.tipo_peticion = tipo_peticion;
     }
 
-    public Aeronave(String ip, String matricula, Piloto piloto, Posicion posicion, int tipo_peticion, Mensaje mensaje) {
-        this.ip = ip;
+    public Aeronave(String ipAeronave,String ipComando, String matricula, Piloto piloto, Posicion posicion, int tipo_peticion, Mensaje mensaje) {
+        this.ipAeronave = ipAeronave;
+        this.ipComando = ipComando;
         this.matricula = matricula;
         this.piloto = piloto;
         this.posicion = posicion;
@@ -46,12 +56,12 @@ public class Aeronave {
         this.mensaje = mensaje;
     }
 
-    public String getIp() {
-        return ip;
+    public String getIpAeronave() {
+        return ipAeronave;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setIpAeronave(String ipAeronave) {
+        this.ipAeronave = ipAeronave;
     }
 
     public String getMatricula() {
@@ -93,4 +103,47 @@ public class Aeronave {
     public void setMensaje(Mensaje mensaje) {
         this.mensaje = mensaje;
     } 
+
+    @Override
+    public String toString() {
+        return "Aeronave{" + "ip=" + ipAeronave + ", matricula=" + matricula + ", piloto=" + piloto + ", posicion=" + posicion + ", tipo_peticion=" + tipo_peticion + ", mensaje=" + mensaje + '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return this.ipAeronave.hashCode()+this.matricula.hashCode(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Aeronave other = (Aeronave) obj;
+        if (!Objects.equals(this.ipAeronave, other.ipAeronave)) {
+            return false;
+        }
+        if (!Objects.equals(this.matricula, other.matricula)) {
+            return false;
+        }
+        return true;
+    }
+    
+    //leer sentencia NMEA 0183 de archivo TXT
+    public void leerGPSTXT() throws GPSException{
+        GPSEventListener gpsListener = new GeoPositionListener(this);
+        IGPSWatcher gpsWatcher = new FileGPSWatcher("C:\\Users\\Jair\\Documents\\NetBeansProjects\\SistemaTactico_Repositorio\\Archivos\\GPS\\GPSReader.txt"
+                ,500,true,gpsListener);
+        gpsWatcher.start();
+    }
+    
+    //leer GPS desde puerto COM
+    public void leerGPSCOM(){
+    
+    }
+    
+    
 }

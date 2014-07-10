@@ -6,9 +6,10 @@
 
 package DAO;
 
-import java.util.ArrayList;
+
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -27,13 +28,13 @@ public class Mision {
     private String descripcion;
     
     //Aeronaves que estan en la mision
-    private List<Aeronave> aeronaves;
+    private Set<Aeronave> aeronaves;
 
     public Mision(Date fecha, String nombre, String descripcion) {
         this.fecha = fecha;
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.aeronaves = new ArrayList<>();
+        this.aeronaves = new HashSet<>();
     }
 
     public Date getFecha() {
@@ -60,15 +61,19 @@ public class Mision {
         this.descripcion = descripcion;
     }
 
-    public List<Aeronave> getAeronaves() {
+    public Set<Aeronave> getAeronaves() {
         return aeronaves;
     }
 
-    public void setAeronaves(List<Aeronave> aeronaves) {
+    public void setAeronaves(Set<Aeronave> aeronaves) {
         this.aeronaves = aeronaves;
     }
     
+    //TRUE sí no existe, FALSE si ya existe  
     public void agregarAeronave(Aeronave aeronave){
-        this.aeronaves.add(aeronave);
+        boolean status = this.aeronaves.add(aeronave);
+
+        
+        
     }        
 }

@@ -1,11 +1,14 @@
 package SistemaTactico;
 
 import Controller.Constante;
-import Controller.Publicador;
 import Controller.Consumidor;
+import Controller.Publicador;
+import DAO.Aeronave;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -46,7 +49,7 @@ public class Main{
         
         
         //Ejemplo tipo Cola
-        Publicador aeronave1 = new Publicador("189.245.241.120","test",Constante.MSN_COLA); 
+        /*Publicador aeronave1 = new Publicador("189.245.241.120","test",Constante.MSN_COLA); 
         Publicador aeronave2 = new Publicador("189.245.241.120","test",Constante.MSN_COLA);
         Consumidor comandoCentral = new Consumidor("189.245.241.120","test",Constante.MSN_COLA);
         
@@ -59,6 +62,25 @@ public class Main{
         aeronave1.cerrarConexion();
         aeronave2.cerrarConexion();
         comandoCentral.cerrarConexion();
+        */
+        
+        //Set - HashSet Example
+        /*Set<Aeronave> d = new HashSet<>();
+        
+        Aeronave a = new Aeronave("127.0.0.1","123456",null,0);
+        Aeronave b = new Aeronave("127.0.0.2","123457",null,0);
+        Aeronave c = new Aeronave("127.0.0.1","123456",null,0);
+        
+        System.out.println(d.add(a));
+        System.out.println(d.add(b));
+        System.out.println(d.add(c));
+        System.out.println(d.size());*/
+        
+        Aeronave aeronave1 = new Aeronave("127.0.0.1","127.0.0.0","123456", null, Constante.CONECTAR_AERONAVE);
+        Aeronave aeronave2 = new Aeronave("127.0.0.2","127.0.0.0","123056", null, Constante.CONECTAR_AERONAVE);
+        
+        aeronave1.leerGPSTXT();
+        
         
     }    
 }
