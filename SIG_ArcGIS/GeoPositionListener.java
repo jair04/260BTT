@@ -9,10 +9,12 @@ package SIG_ArcGIS;
 
 import DAO.Aeronave;
 import DAO.Posicion;
+import com.esri.core.geometry.CoordinateConversion;
 import com.esri.core.gps.GPSEventListener;
 import com.esri.core.gps.GPSStatus;
 import com.esri.core.gps.GeoPosition;
 import com.esri.core.gps.Satellite;
+import com.esri.map.JMap;
 import java.util.Map;
 
 
@@ -44,7 +46,7 @@ public class GeoPositionListener implements GPSEventListener {
         
     @Override
     public void onPositionChanged(GeoPosition newPosition) {
-      // display the location information in our text area  
+        // display the location information in our text area  
         Posicion posicion = new Posicion(
                 newPosition.getLocation().getLatitude()+"",
                 newPosition.getLocation().getLongitude()+"",
@@ -58,10 +60,12 @@ public class GeoPositionListener implements GPSEventListener {
         //Enviamos la informacion al comando central
         
         System.out.println("\n*********************************************"
-                + "\n Latitud: "  + newPosition.getLocation().getLatitude()
-                + "\n Longitud: " + newPosition.getLocation().getLongitude()
-                + "\n Altitud: "  + newPosition.getLocation().getAltitude()
-                + "\n Velocidad: "+ newPosition.getLocation().getSpeed()
+                + "\n ipAeronave: " + aeronave.getIpAeronave()
+                + "\n ipComando: "  + aeronave.getIpComando()
+                + "\n Latitud: "    + newPosition.getLocation().getLatitude()
+                + "\n Longitud: "   + newPosition.getLocation().getLongitude()
+                + "\n Altitud: "    + newPosition.getLocation().getAltitude()
+                + "\n Velocidad: "  + newPosition.getLocation().getSpeed()
                 + "\n MGRS: "
         );
 

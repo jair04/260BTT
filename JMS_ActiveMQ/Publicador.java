@@ -10,32 +10,41 @@ package JMS_ActiveMQ;
  *
  * @author Jair
  */
-import Controller.Constante;
-import org.apache.activemq.ActiveMQConnectionFactory;
- 
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import org.apache.activemq.ActiveMQConnectionFactory;
 
-public class Publicador{
+public class Publicador extends MessageReceiver{
     
     
     private final ActiveMQConnectionFactory connectionFactory;
     private final Connection connection;
     private final Session session;
-    private Destination destination;
+    private final Destination destination;
     private final MessageProducer producer;
+    private final String ip;
 
     /*
         ip: ip donde se esta ejecutando la aplicacion del comando central
         nombreTema: nombre del tema donde se estaran publicando los temas
         tipo: tipo del mensaje por cola o tema 
     */
-    public Publicador(String ip, String nombreTema, int tipo) throws JMSException{        
+    public Publicador(String nombreTema) throws JMSException, IOException{        
+        //get the public ip
+        this.ip = this.getIP();
+
         // Create a ConnectionFactory
         connectionFactory = new ActiveMQConnectionFactory("vm://"+ip+"");
         
@@ -46,25 +55,16 @@ public class Publicador{
         // Create a Session
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-        // Create the destination (Topic or Queue)        
-        if(tipo==Constante.MSN_TEMA){
-            destination = session.createTopic(nombreTema);
-        }else if(tipo==Constante.MSN_COLA){
-            destination = session.createQueue(nombreTema);
-        }
+        // Create the destination (Topic or Queue)
+        destination = session.createTopic(nombreTema);
         
-        //Create a MessageProducer from the Session to the Topic or Queue
-        producer = session.createProducer(destination);
-        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);      
-    }
-    
-    public void publicarMensaje(String mensaje) throws JMSException{
-        // Create a messages
-        TextMessage message = session.createTextMessage(mensaje);
+        //Create a MessageProducer from the Session to send the airship information set
+        producer = session.createProducer(destination);        
+        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
         
-        // Tell the producer to send the message
-        System.out.println("Sent message: "+ message.hashCode());
-        producer.send(message);
+        //Create a MessageConsumer from de session to receive the airship requests
+        MessageConsumer consumer = this.session.createConsumer(destination);
+        consumer.setMessageListener(this);
     }
     
     public void cerrarConexion() throws JMSException{
@@ -72,4 +72,21 @@ public class Publicador{
         session.close();
         connection.close();
     }
+    
+    public void publicarMensaje(String mensaje) throws JMSException{
+        // Create a messages
+        TextMessage message = session.createTextMessage(mensaje);
+       
+        // Tell the producer to send the message
+        System.out.println("Sent message: "+ message.hashCode());
+        producer.send(message);
+    }
+    
+    private String getIP() throws MalformedURLException, IOException{
+        URL whatismyip = new URL("http://checkip.amazonaws.com");
+        BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+        String ip = in.readLine();
+        return ip;
+    }
+
 }

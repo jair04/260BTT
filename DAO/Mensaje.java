@@ -6,25 +6,46 @@
 
 package DAO;
 
-import java.util.List;
+import java.io.Serializable;
 
 /**
  *
  * @author Jair
  */
-public class Mensaje {
-    
-    //Define si el mensaje es nuevo/viejo
-    private boolean status;
-    
-    //define el tipo de mensaje que ha sido recibido
+public class Mensaje implements Serializable{
+   
+    private Aeronave aeronave;
     private int tipo;
-    
-    //informacion relevante que se quiere comunicar
-    private String mensaje;
-    
-    //puntos de interes que se han asignado 
-    List<Posicion> puntosInteres;
-    
-    
+    private String descripcion;
+
+    public Mensaje(int tipo,Aeronave aeronave) {
+        this.tipo = tipo;
+        this.aeronave = aeronave;
+        this.descripcion = null;
+    }
+
+    public Aeronave getAeronave() {
+        return aeronave;
+    }
+
+    public void setAeronave(Aeronave aeronave) {
+        this.aeronave = aeronave;
+    }
+
+    public int getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(int tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
 }

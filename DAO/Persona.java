@@ -6,11 +6,13 @@
 
 package DAO;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Jair
  */
-public class Persona {
+public class Persona implements Serializable{
     private String nombre;
     private String apellidoPaterno;
     private String apellidoMaterno;

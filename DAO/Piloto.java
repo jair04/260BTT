@@ -6,11 +6,13 @@
 
 package DAO;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Jair
  */
-public class Piloto extends Persona{
+public class Piloto extends Persona implements Serializable{
     private String matricula;
 
     public Piloto() {

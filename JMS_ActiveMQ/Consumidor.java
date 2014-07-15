@@ -6,13 +6,11 @@
 
 package JMS_ActiveMQ;
 
-import Controller.Constante;
 import javax.jms.Connection;
 import javax.jms.Destination;
-import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -21,7 +19,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
  *
  * @author Jair
  */
-public class Consumidor implements ExceptionListener{
+public class Consumidor extends MessageReceiver{
     
     private final ActiveMQConnectionFactory connectionFactory;
     private final Connection connection;
@@ -29,41 +27,26 @@ public class Consumidor implements ExceptionListener{
     private Destination destination;
     private final MessageConsumer consumer;
     
-    public Consumidor(String ip, String nombreTema,int tipo) throws JMSException{
+    public Consumidor(String ip, String nombreTema) throws JMSException{
         // Create a ConnectionFactory
         connectionFactory = new ActiveMQConnectionFactory("vm://"+ip+"");
  
         // Create a Connection
         connection = connectionFactory.createConnection();
         connection.start();
- 
-        connection.setExceptionListener(this);
- 
+        
         // Create a Session
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
  
         // Create the destination (Topic or Queue)
-        if(tipo==Constante.MSN_TEMA){
-            destination = session.createTopic(nombreTema);
-        }else if(tipo==Constante.MSN_COLA){
-            destination = session.createQueue(nombreTema);
-        }
+        destination = session.createTopic(nombreTema);
+        
+        //establish conexion with the "Comando Central"
+        this.realizarPeticionConexion(destination, session);
  
         // Create a MessageConsumer from the Session to the Topic or Queue
         consumer = session.createConsumer(destination);
-    }
-    
-    public void leerMensaje() throws JMSException{
-        // Wait for a message
-        Message message = consumer.receive();
-                              
-        if (message instanceof TextMessage) {
-            TextMessage textMessage = (TextMessage) message;
-            String text = textMessage.getText();
-            System.out.println("Received: " + text);
-        }else{
-            System.out.println("Received: " + message);
-        }
+        consumer.setMessageListener(this);
     }
     
     public void cerrarConexion() throws JMSException{
@@ -72,9 +55,11 @@ public class Consumidor implements ExceptionListener{
         session.close();
         connection.close();
     }
- 
-    public synchronized void onException(JMSException ex) {
-        System.out.println("JMS Exception occured.  Shutting down client.");
+
+    private void realizarPeticionConexion(Destination destination, Session session) throws JMSException{
+        TextMessage message = session.createTextMessage("Quiero conectarme");
+        MessageProducer producer = session.createProducer(destination);
+        producer.send(message);
     }
 }
 

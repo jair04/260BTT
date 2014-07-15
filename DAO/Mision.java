@@ -7,6 +7,7 @@
 package DAO;
 
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +17,7 @@ import java.util.Set;
  *
  * @author Jair
  */
-public class Mision {
+public class Mision implements Serializable{
     
     //fecha de la mision
     private Date fecha;

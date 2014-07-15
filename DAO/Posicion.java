@@ -6,20 +6,27 @@
 
 package DAO;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Jair
  */
 
 //Almacena la informacion geografica de la aeronave en un punto especifico
-public class Posicion {
+public class Posicion implements Serializable{
     
     //Variables que cambian dependiendo de la posicion 
     private String latitud;
     private String longitud;
     private String altitud;
-    private String velocidad;
+    
+    //coordenadas en sistema militar Military Grid Reference Sistem 
     private String mgrs;
+    
+    //Velocidad en un punto especifico
+    private String velocidad;
+
 
     public Posicion() {
     }

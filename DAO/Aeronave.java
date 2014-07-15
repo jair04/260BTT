@@ -6,18 +6,30 @@
 
 package DAO;
 
+import Controller.Constante;
+import JMS_ActiveMQ.Consumidor;
+import JMS_ActiveMQ.Publicador;
 import SIG_ArcGIS.GeoPositionListener;
 import com.esri.core.gps.FileGPSWatcher;
 import com.esri.core.gps.GPSEventListener;
 import com.esri.core.gps.GPSException;
 import com.esri.core.gps.IGPSWatcher;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import javax.jms.JMSException;
 
 /**
  *
  * @author Jair
  */
-public class Aeronave {
+public class Aeronave implements Serializable{
     
     //informacion general
     private String ipAeronave;
@@ -28,35 +40,41 @@ public class Aeronave {
     /*Almacena informacion geografica de una aeronave en un punto especifivo*/
     private Posicion posicion;
     
-    /*
-        variable que almacena el tipo de peticion:
-        CONECTAR_AERONAVE/ ACTUALIZAR_AERONAVE/ AERONAVE_RECHAZADA
-    */
-    private int tipo_peticion;
+    /*Puntos de interes que han sido agregador*/
+    List<PuntoInteres> puntosInteres;
     
-    /*Mensaje que sera enviado de la aeronave al comando central */
-    private Mensaje mensaje;
+    //tema en el cual se publicaran los mensajes
+    private String tema;
 
-       
-    public Aeronave() {
-    }
-
-    public Aeronave(String ipAeronave,String ipComando, String matricula, Piloto piloto, int tipo_peticion) {
-        this.ipAeronave = ipAeronave;
-        this.ipComando = ipComando;
-        this.matricula = matricula;
-        this.piloto = piloto;
-        this.tipo_peticion = tipo_peticion;
-    }
-
-    public Aeronave(String ipAeronave,String ipComando, String matricula, Piloto piloto, Posicion posicion, int tipo_peticion, Mensaje mensaje) {
+    public Aeronave(String ipAeronave, String ipComando, String matricula, Piloto piloto, Posicion posicion, List<PuntoInteres> puntosInteres, String tema) {
         this.ipAeronave = ipAeronave;
         this.ipComando = ipComando;
         this.matricula = matricula;
         this.piloto = piloto;
         this.posicion = posicion;
-        this.tipo_peticion = tipo_peticion;
-        this.mensaje = mensaje;
+        this.puntosInteres = puntosInteres;
+        this.tema = tema;
+    }
+
+       
+    public Aeronave() {
+    }
+
+    public Aeronave(String ipAeronave,String ipComando, String matricula, Piloto piloto) {
+        this.ipAeronave = ipAeronave;
+        this.ipComando = ipComando;
+        this.matricula = matricula;
+        this.piloto = piloto;
+        this.puntosInteres = new ArrayList<>();
+    }
+
+    public Aeronave(String ipAeronave,String ipComando, String matricula, Piloto piloto, Posicion posicion) {
+        this.ipAeronave = ipAeronave;
+        this.ipComando = ipComando;
+        this.matricula = matricula;
+        this.piloto = piloto;
+        this.posicion = posicion;
+        this.puntosInteres = new ArrayList<>();
     }
 
     public String getIpAeronave() {
@@ -91,22 +109,6 @@ public class Aeronave {
         this.posicion = posicion;
     }
 
-    public int getTipo_peticion() {
-        return tipo_peticion;
-    }
-
-    public void setTipo_peticion(int tipo_peticion) {
-        this.tipo_peticion = tipo_peticion;
-    }
-
-    public Mensaje getMensaje() {
-        return mensaje;
-    }
-
-    public void setMensaje(Mensaje mensaje) {
-        this.mensaje = mensaje;
-    } 
-
     public String getIpComando() {
         return ipComando;
     }
@@ -114,8 +116,15 @@ public class Aeronave {
     public void setIpComando(String ipComando) {
         this.ipComando = ipComando;
     }
-    
 
+    public String getTema() {
+        return tema;
+    }
+
+    public void setTema(String tema) {
+        this.tema = tema;
+    }
+    
     @Override
     public String toString() {
         return "Aeronave{" + "ip=" 
@@ -127,9 +136,7 @@ public class Aeronave {
                            + ", posicion=" 
                            + posicion 
                            + ", tipo_peticion=" 
-                           + tipo_peticion 
-                           + ", mensaje=" 
-                           + mensaje + '}';
+                           + '}';
     }
 
     @Override
@@ -154,19 +161,22 @@ public class Aeronave {
         }
         return true;
     }
+
+    public void realizarConexion() throws JMSException{
+ }
     
-    //leer sentencia NMEA 0183 de archivo TXT
-    public void leerGPSTXT() throws GPSException{    
+    //lee sentencias NMEA 0183 de archivo TXT y las envia al comando central
+    public void enviarInformacion() throws GPSException{    
         //Ruta absoluta del archivo
         String ruta = getClass().getResource("/Archivos/GPS/GPSReader.txt").toString();
         ruta = ruta.substring(6,ruta.length());
         
         /*
-            Lectura del GPS y envio de la informacion
-            actualizada al comando central "Interfaz:GeoPositionListener.java"
+            Lectura del GPS y envio de la informacion actualizada
+            al comando central a través de "Interfaz:GeoPositionListener.java"
         */
         GPSEventListener gpsListener = new GeoPositionListener(this);
-        IGPSWatcher gpsWatcher = new FileGPSWatcher(ruta,500,true,gpsListener);
+        IGPSWatcher gpsWatcher = new FileGPSWatcher(ruta,500,false,gpsListener);
         gpsWatcher.start();
     }
     
@@ -175,5 +185,14 @@ public class Aeronave {
     
     }
     
+    //lee la informacion que publica el comando central
+    public Aeronave recibirInfoComando(){
+        return null;
+    }
     
+    private String obtenerIP() throws MalformedURLException, IOException{
+        URL whatismyip = new URL("http://checkip.amazonaws.com");
+        BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+        return in.readLine();
+    }
 }

@@ -4,16 +4,13 @@
  * and open the template in the editor.
  */
 
-package DAO;
-
-import java.io.Serializable;
+package SistemaTactico;
 
 /**
  *
  * @author Jair
  */
-
-//Clase temporal
-public class Comandante extends Persona implements Serializable{
-    
+public class Comando_main {
+    public static void main(String args[]){
+    }
 }
