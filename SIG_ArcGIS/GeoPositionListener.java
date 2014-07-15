@@ -9,12 +9,10 @@ package SIG_ArcGIS;
 
 import DAO.Aeronave;
 import DAO.Posicion;
-import com.esri.core.geometry.CoordinateConversion;
 import com.esri.core.gps.GPSEventListener;
 import com.esri.core.gps.GPSStatus;
 import com.esri.core.gps.GeoPosition;
 import com.esri.core.gps.Satellite;
-import com.esri.map.JMap;
 import java.util.Map;
 
 

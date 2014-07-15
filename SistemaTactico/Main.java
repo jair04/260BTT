@@ -23,19 +23,19 @@ public class Main{
         // Ejemplo tipo Tema
         
          
-        /*Publicador comandoCentral = new Publicador("test");
+        Publicador comandoCentral = new Publicador("test");
         Consumidor aeronave1 = new Consumidor("189.245.241.120","test");
-        Consumidor aeronave2 = new Consumidor("189.245.241.120","test");
+        //Consumidor aeronave2 = new Consumidor("189.245.241.120","test");
         
         
         comandoCentral.publicarMensaje("hola como estan");        
         comandoCentral.publicarMensaje("El mensaje cambio");
-        comandoCentral.publicarMensaje("Enviando otro mensaje");
+        //comandoCentral.publicarMensaje("Enviando otro mensaje");
         
         comandoCentral.cerrarConexion();
         aeronave1.cerrarConexion();
-        aeronave2.cerrarConexion();  
-        */
+        //aeronave2.cerrarConexion();  
+        
         
         
         
@@ -81,9 +81,10 @@ public class Main{
         System.out.println(d.add(c));
         System.out.println(d.size());*/
         
-        Aeronave aeronave1 = new Aeronave("127.0.0.1","127.0.0.0","123456", null);
+        /*Aeronave aeronave1 = new Aeronave("127.0.0.1","127.0.0.0","123456", null);
         Aeronave aeronave2 = new Aeronave("127.0.0.2","127.0.0.0","123056", null);
-        aeronave1.enviarInformacion();      
+        aeronave1.enviarInformacion();   
+        */
         
         /*Consumidor comando = new Consumidor("189.245.241.120",Constante.TEMA_AERONAVE_COMANDO,Constante.MSN_COLA);
         comando.leerMensaje();

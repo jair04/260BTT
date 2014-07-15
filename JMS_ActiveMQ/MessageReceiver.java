@@ -6,11 +6,14 @@
 
 package JMS_ActiveMQ;
 
+import DAO.Mensaje;
+import DAO.Mision;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 
 /**
@@ -20,21 +23,24 @@ import javax.jms.TextMessage;
 public class MessageReceiver implements MessageListener {
 
     @Override
-    public void onMessage(Message message) {
-        if (message instanceof TextMessage) {
-           try {
-               TextMessage textMessage = (TextMessage) message;
-               String text = textMessage.getText();
-               System.out.println("Consumidor Received: " + text);
-           } catch (JMSException ex) {
-               Logger.getLogger(Consumidor.class.getName()).log(Level.SEVERE, null, ex);
-           }
-        }else{
-            System.out.println("Received: " + message);
+    public void onMessage(Message message){        
+        try{
+            if (message instanceof TextMessage) {
+                TextMessage textMessage = (TextMessage) message;
+                String text = textMessage.getText();
+                System.out.println("Consumidor Received: " + text);
+            }else if(message instanceof ObjectMessage){
+                ObjectMessage objMessage = (ObjectMessage)message;
+                Mensaje mensaje = (Mensaje)objMessage.getObject();
+                System.out.println(mensaje.getTipo());
+            }
+        }catch (JMSException ex) {
+                Logger.getLogger(MessageReceiver.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    private void procesarMensaje(){
+    private void procesarMensaje(Message message){
+        
     
     }
     

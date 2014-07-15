@@ -6,13 +6,15 @@
 
 package JMS_ActiveMQ;
 
+import Controller.Constante;
+import DAO.Mensaje;
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
+import javax.jms.ObjectMessage;
 import javax.jms.Session;
-import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 /**
@@ -57,9 +59,12 @@ public class Consumidor extends MessageReceiver{
     }
 
     private void realizarPeticionConexion(Destination destination, Session session) throws JMSException{
-        TextMessage message = session.createTextMessage("Quiero conectarme");
+        Mensaje mensaje = new Mensaje(Constante.CONECTAR_AERONAVE,null);
+        ObjectMessage objMessage = session.createObjectMessage();
+        objMessage.setObject(mensaje);
+        
         MessageProducer producer = session.createProducer(destination);
-        producer.send(message);
+        producer.send(objMessage);
     }
 }
 
