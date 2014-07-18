@@ -11,6 +11,7 @@ package JMS_ActiveMQ;
  * @author Jair
  */
 
+import Controller.Constante;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,13 +21,15 @@ import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-public class Publicador extends MessageReceiver{
+public class Publicador implements MessageListener{
     
     
     private final ActiveMQConnectionFactory connectionFactory;
@@ -41,7 +44,7 @@ public class Publicador extends MessageReceiver{
         nombreTema: nombre del tema donde se estaran publicando los temas
         tipo: tipo del mensaje por cola o tema 
     */
-    public Publicador(String nombreTema) throws JMSException, IOException{        
+    public Publicador() throws JMSException, IOException{        
         //get the public ip
         this.ip = this.getIP();
 
@@ -56,15 +59,26 @@ public class Publicador extends MessageReceiver{
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
         // Create the destination (Topic or Queue)
-        destination = session.createTopic(nombreTema);
+        destination = session.createTopic(Constante.NOMBRE_TEMA);
         
         //Create a MessageProducer from the Session to send the airship information set
         producer = session.createProducer(destination);        
         producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
         
         //Create a MessageConsumer from de session to receive the airship requests
-        MessageConsumer consumer = this.session.createConsumer(destination);
+        Destination destinationAux = this.session.createQueue(Constante.NOMBRE_COLA);
+        MessageConsumer consumer = this.session.createConsumer(destinationAux);
         consumer.setMessageListener(this);
+    }
+    
+    public void enviarMensaje(String mensaje) throws JMSException, InterruptedException{
+        // Create a messages
+        TextMessage message = session.createTextMessage(mensaje);
+       
+        // Tell the producer to send the message
+        System.out.println("Sent message: "+ message.hashCode());
+        producer.send(message);
+        Thread.sleep(10);
     }
     
     public void cerrarConexion() throws JMSException{
@@ -73,20 +87,16 @@ public class Publicador extends MessageReceiver{
         connection.close();
     }
     
-    public void publicarMensaje(String mensaje) throws JMSException{
-        // Create a messages
-        TextMessage message = session.createTextMessage(mensaje);
-       
-        // Tell the producer to send the message
-        System.out.println("Sent message: "+ message.hashCode());
-        producer.send(message);
-    }
-    
     private String getIP() throws MalformedURLException, IOException{
         URL whatismyip = new URL("http://checkip.amazonaws.com");
         BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
         String ip = in.readLine();
         return ip;
+    }
+
+    @Override
+    public void onMessage(Message msg) {
+        System.out.println("mensaje recibido de aeronave");
     }
 
 }

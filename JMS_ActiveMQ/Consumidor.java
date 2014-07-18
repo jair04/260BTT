@@ -9,29 +9,35 @@ package JMS_ActiveMQ;
 import Controller.Constante;
 import DAO.Mensaje;
 import javax.jms.Connection;
+import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 /**
  *
  * @author Jair
  */
-public class Consumidor extends MessageReceiver{
+public class Consumidor implements MessageListener{
     
     private final ActiveMQConnectionFactory connectionFactory;
     private final Connection connection;
     private final Session session;
-    private Destination destination;
+    private final Destination destination;
     private final MessageConsumer consumer;
     
-    public Consumidor(String ip, String nombreTema) throws JMSException{
+    public Consumidor(String ip) throws JMSException{
+        
         // Create a ConnectionFactory
         connectionFactory = new ActiveMQConnectionFactory("vm://"+ip+"");
+        
  
         // Create a Connection
         connection = connectionFactory.createConnection();
@@ -41,16 +47,13 @@ public class Consumidor extends MessageReceiver{
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
  
         // Create the destination (Topic or Queue)
-        destination = session.createTopic(nombreTema);
-        
-        //establish conexion with the "Comando Central"
-        this.realizarPeticionConexion(destination, session);
+        destination = session.createTopic(Constante.NOMBRE_TEMA);
  
         // Create a MessageConsumer from the Session to the Topic or Queue
         consumer = session.createConsumer(destination);
         consumer.setMessageListener(this);
     }
-    
+     
     public void cerrarConexion() throws JMSException{
         //Clean up
         consumer.close();
@@ -58,13 +61,21 @@ public class Consumidor extends MessageReceiver{
         connection.close();
     }
 
-    private void realizarPeticionConexion(Destination destination, Session session) throws JMSException{
-        Mensaje mensaje = new Mensaje(Constante.CONECTAR_AERONAVE,null);
-        ObjectMessage objMessage = session.createObjectMessage();
-        objMessage.setObject(mensaje);
+    public void enviarMensaje() throws JMSException, InterruptedException{
+        Destination destinationAux = this.session.createQueue(Constante.NOMBRE_COLA);
+        MessageProducer producerAux = this.session.createProducer(destinationAux);
+        producerAux.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
         
-        MessageProducer producer = session.createProducer(destination);
-        producer.send(objMessage);
+        TextMessage message = session.createTextMessage("enviado desde aeronave");
+        producerAux.send(message);
+        Thread.sleep(10);
+        
+        producerAux.close();
+    }
+
+    @Override
+    public void onMessage(Message msg) {
+        System.out.println("mensaje recibido de comando");
     }
 }
 

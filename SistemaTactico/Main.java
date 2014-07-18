@@ -23,18 +23,33 @@ public class Main{
         // Ejemplo tipo Tema
         
          
-        Publicador comandoCentral = new Publicador("test");
-        Consumidor aeronave1 = new Consumidor("189.245.241.120","test");
+        Publicador comandoCentral = new Publicador();
+        Consumidor aeronave1 = new Consumidor("189.245.241.120");
+        Consumidor aeronave2 = new Consumidor("189.245.241.120");
+        Consumidor aeronave3 = new Consumidor("189.245.241.120");
+        Consumidor aeronave4 = new Consumidor("189.245.241.120");
+        
+        
         //Consumidor aeronave2 = new Consumidor("189.245.241.120","test");
         
+        aeronave1.enviarMensaje();
+        aeronave2.enviarMensaje();
+        aeronave3.enviarMensaje();
+        aeronave4.enviarMensaje();
         
-        comandoCentral.publicarMensaje("hola como estan");        
-        comandoCentral.publicarMensaje("El mensaje cambio");
+        comandoCentral.enviarMensaje("hola como estan");        
+        comandoCentral.enviarMensaje("El mensaje cambio");
+        comandoCentral.enviarMensaje("El mensaje cambio2q3423");
         //comandoCentral.publicarMensaje("Enviando otro mensaje");
+        
+        
         
         comandoCentral.cerrarConexion();
         aeronave1.cerrarConexion();
-        //aeronave2.cerrarConexion();  
+        aeronave2.cerrarConexion();
+        aeronave3.cerrarConexion();
+        aeronave4.cerrarConexion();
+        aeronave2.cerrarConexion();  
         
         
         
@@ -81,10 +96,10 @@ public class Main{
         System.out.println(d.add(c));
         System.out.println(d.size());*/
         
-        /*Aeronave aeronave1 = new Aeronave("127.0.0.1","127.0.0.0","123456", null);
-        Aeronave aeronave2 = new Aeronave("127.0.0.2","127.0.0.0","123056", null);
-        aeronave1.enviarInformacion();   
-        */
+        //Aeronave aeronave1 = new Aeronave("127.0.0.1","127.0.0.0","123456", null);
+        //Aeronave aeronave2 = new Aeronave("127.0.0.2","127.0.0.0","123056", null);
+        //aeronave1.enviarInformacion();   
+        
         
         /*Consumidor comando = new Consumidor("189.245.241.120",Constante.TEMA_AERONAVE_COMANDO,Constante.MSN_COLA);
         comando.leerMensaje();
