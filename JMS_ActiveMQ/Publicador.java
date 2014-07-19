@@ -28,6 +28,7 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.broker.BrokerService;
 
 public class Publicador implements MessageListener{
     
@@ -44,12 +45,20 @@ public class Publicador implements MessageListener{
         nombreTema: nombre del tema donde se estaran publicando los temas
         tipo: tipo del mensaje por cola o tema 
     */
-    public Publicador() throws JMSException, IOException{        
+    public Publicador(String ip) throws JMSException, IOException, Exception{        
         //get the public ip
-        this.ip = this.getIP();
+        //this.ip = this.getIP();
+        this.ip = ip;
+        
+        //Embebbed message broker
+         BrokerService broker = new BrokerService();
+         broker.setPersistent(false);
+         broker.setUseJmx(false);
+         broker.addConnector("tcp://"+this.ip+":61616");
+         broker.start();
 
         // Create a ConnectionFactory
-        connectionFactory = new ActiveMQConnectionFactory("vm://"+ip+"");
+        connectionFactory = new ActiveMQConnectionFactory("tcp://"+this.ip+":61616");
         
         // Create a Connection
         connection = connectionFactory.createConnection();

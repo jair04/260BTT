@@ -36,7 +36,7 @@ public class Consumidor implements MessageListener{
     public Consumidor(String ip) throws JMSException{
         
         // Create a ConnectionFactory
-        connectionFactory = new ActiveMQConnectionFactory("vm://"+ip+"");
+        connectionFactory = new ActiveMQConnectionFactory("tcp://"+ip+":61616");
         
  
         // Create a Connection

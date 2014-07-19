@@ -23,33 +23,33 @@ public class Main{
         // Ejemplo tipo Tema
         
          
-        Publicador comandoCentral = new Publicador();
-        Consumidor aeronave1 = new Consumidor("189.245.241.120");
-        Consumidor aeronave2 = new Consumidor("189.245.241.120");
-        Consumidor aeronave3 = new Consumidor("189.245.241.120");
-        Consumidor aeronave4 = new Consumidor("189.245.241.120");
+        Publicador comandoCentral = new Publicador("192.168.1.67");
+        //Consumidor aeronave1 = new Consumidor("192.168.1.67");
+        //Consumidor aeronave2 = new Consumidor("192.168.1.67");
+        //Consumidor aeronave3 = new Consumidor("192.168.1.67");
+        //Consumidor aeronave4 = new Consumidor("192.168.1.67");
         
         
         //Consumidor aeronave2 = new Consumidor("189.245.241.120","test");
         
-        aeronave1.enviarMensaje();
-        aeronave2.enviarMensaje();
-        aeronave3.enviarMensaje();
-        aeronave4.enviarMensaje();
+        //aeronave1.enviarMensaje();
+        //aeronave2.enviarMensaje();
+        //aeronave3.enviarMensaje();
+        //aeronave4.enviarMensaje();
         
-        comandoCentral.enviarMensaje("hola como estan");        
-        comandoCentral.enviarMensaje("El mensaje cambio");
-        comandoCentral.enviarMensaje("El mensaje cambio2q3423");
-        //comandoCentral.publicarMensaje("Enviando otro mensaje");
+        //comandoCentral.enviarMensaje("hola como estan");        
+        //comandoCentral.enviarMensaje("El mensaje cambio");
+        //comandoCentral.enviarMensaje("El mensaje cambio2q3423");
+        //comandoCentral.enviarMensaje("Enviando otro mensaje");
         
         
         
         comandoCentral.cerrarConexion();
-        aeronave1.cerrarConexion();
-        aeronave2.cerrarConexion();
-        aeronave3.cerrarConexion();
-        aeronave4.cerrarConexion();
-        aeronave2.cerrarConexion();  
+        //aeronave1.cerrarConexion();
+        //aeronave2.cerrarConexion();
+        //aeronave3.cerrarConexion();
+        //aeronave4.cerrarConexion();
+        //aeronave2.cerrarConexion();  
         
         
         
