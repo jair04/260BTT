@@ -38,7 +38,7 @@ public class Publicador implements MessageListener{
     private final Session session;
     private final Destination destination;
     private final MessageProducer producer;
-    private final String ip;
+    private String ip;
 
     /*
         ip: ip donde se esta ejecutando la aplicacion del comando central
@@ -46,19 +46,18 @@ public class Publicador implements MessageListener{
         tipo: tipo del mensaje por cola o tema 
     */
     public Publicador(String ip) throws JMSException, IOException, Exception{        
-        //get the public ip
-        //this.ip = this.getIP();
-        this.ip = ip;
+        //Server ip
+        this.ip = "tcp://"+ip+":61616";
         
         //Embebbed message broker
          BrokerService broker = new BrokerService();
          broker.setPersistent(false);
          broker.setUseJmx(false);
-         broker.addConnector("tcp://"+this.ip+":61616");
+         broker.addConnector(this.ip);
          broker.start();
 
         // Create a ConnectionFactory
-        connectionFactory = new ActiveMQConnectionFactory("tcp://"+this.ip+":61616");
+        connectionFactory = new ActiveMQConnectionFactory(this.ip);
         
         // Create a Connection
         connection = connectionFactory.createConnection();

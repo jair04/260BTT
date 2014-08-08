@@ -6,9 +6,6 @@
 
 package DAO;
 
-import Controller.Constante;
-import JMS_ActiveMQ.Consumidor;
-import JMS_ActiveMQ.Publicador;
 import SIG_ArcGIS.GeoPositionListener;
 import com.esri.core.gps.FileGPSWatcher;
 import com.esri.core.gps.GPSEventListener;
@@ -163,10 +160,11 @@ public class Aeronave implements Serializable{
     }
 
     public void realizarConexion() throws JMSException{
- }
+    }
     
     //lee sentencias NMEA 0183 de archivo TXT y las envia al comando central
     public void enviarInformacion() throws GPSException{    
+        
         //Ruta absoluta del archivo
         String ruta = getClass().getResource("/Archivos/GPS/GPSReader.txt").toString();
         ruta = ruta.substring(6,ruta.length());
@@ -175,9 +173,10 @@ public class Aeronave implements Serializable{
             Lectura del GPS y envio de la informacion actualizada
             al comando central a través de "Interfaz:GeoPositionListener.java"
         */
+        /*
         GPSEventListener gpsListener = new GeoPositionListener(this);
         IGPSWatcher gpsWatcher = new FileGPSWatcher(ruta,500,false,gpsListener);
-        gpsWatcher.start();
+        gpsWatcher.start();*/
     }
     
     //leer GPS desde puerto COM

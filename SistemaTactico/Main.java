@@ -21,17 +21,17 @@ public class Main{
         
         
         // Ejemplo tipo Tema
+        String current = new java.io.File( "." ).getCanonicalPath();
+        System.out.println(current+"\\build\\classes\\Archivos\\Imagenes");
         
-         
-        Publicador comandoCentral = new Publicador("192.168.1.67");
-        Consumidor aeronave1 = new Consumidor("192.168.1.67");
+        /* 
+        Publicador comandoCentral = new Publicador("0.0.0.0");
+        
+        Consumidor aeronave1 = new Consumidor("192.168.1.67"); //189.245.124.120
         Consumidor aeronave2 = new Consumidor("192.168.1.67");
         Consumidor aeronave3 = new Consumidor("192.168.1.67");
         Consumidor aeronave4 = new Consumidor("192.168.1.67");
-        
-        
-        //Consumidor aeronave2 = new Consumidor("189.245.241.120","test");
-        
+           
         aeronave1.enviarMensaje();
         aeronave2.enviarMensaje();
         aeronave3.enviarMensaje();
@@ -49,7 +49,7 @@ public class Main{
         aeronave2.cerrarConexion();
         aeronave3.cerrarConexion();
         aeronave4.cerrarConexion();
-        aeronave2.cerrarConexion();  
+        aeronave2.cerrarConexion();*/
         
         //System.out.println("hola como estas");
        
