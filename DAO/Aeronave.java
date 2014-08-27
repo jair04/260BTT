@@ -34,7 +34,7 @@ public class Aeronave implements Serializable{
     private String matricula;
     private Piloto piloto;
     
-    /*Almacena informacion geografica de una aeronave en un punto especifivo*/
+    /*Almacena informacioni geografica de una aeronave en un punto especifivo*/
     private Posicion posicion;
     
     /*Puntos de interes que han sido agregador*/

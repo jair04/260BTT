@@ -24,27 +24,20 @@ import com.esri.map.MapEventListener;
 import com.esri.map.MapEventListenerAdapter;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
 /**
  * This application demonstrates how to listen to a {@link MapEvent} on the
@@ -73,9 +66,9 @@ public abstract class General_GUI {
     final private String currentPath = new java.io.File(".").getCanonicalPath();
 
     //variables
-    private final String mgrs = "FGCHFGHFGH$T";
-    private final String velocidad = "54815121151";
-    private final String elevacion = "15125451545";
+    private final String mgrs = "NaN";
+    private final String velocidad = "NaN";
+    private final String altitudValue = "NaN";
 
     //gps layer
     protected GPSLayer gpsLayer;
@@ -90,7 +83,7 @@ public abstract class General_GUI {
     protected final JMap map;
 
     //offset to strings
-    private final String offset = "                         ";
+    private final String offset = "                                                                     ";
 
     //List of conected users
     List<Aeronave> aeronaves;
@@ -102,6 +95,9 @@ public abstract class General_GUI {
     protected JScrollPane userSub;
     protected JScrollPane layerSub;
     protected JScrollPane docSub;
+    
+    private JPanel controlPanel;
+    private InformationAirship panelInformation;
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -323,26 +319,26 @@ public abstract class General_GUI {
 
     //create submenu Jpanel
     protected JPanel createSubmenu_panel(List<JComponent> components, boolean group) {
-        JPanel controlPanel = new JPanel();
-        BoxLayout boxLayout = new BoxLayout(controlPanel, BoxLayout.Y_AXIS);
-        controlPanel.setBorder(new javax.swing.border.LineBorder(new Color(0, 0, 0), 0, true));
-        controlPanel.setLayout(boxLayout);
-        controlPanel.setLocation(0, 0);
+        JPanel controlPanelSubmenu = new JPanel();
+        BoxLayout boxLayout = new BoxLayout(controlPanelSubmenu, BoxLayout.Y_AXIS);
+        controlPanelSubmenu.setBorder(new javax.swing.border.LineBorder(new Color(0, 0, 0), 0, true));
+        controlPanelSubmenu.setLayout(boxLayout);
+        controlPanelSubmenu.setLocation(0, 0);
 
         Color color = new Color(0, 116, 166, 255);
-        controlPanel.setBackground(new Color(0, 0, 0, 60));
+        controlPanelSubmenu.setBackground(new Color(0, 0, 0, 60));
 
         for (JComponent component : components) {
             component.setBackground(color);
             component.setForeground(Color.WHITE);
 
-            controlPanel.add(component);
-            controlPanel.add(Box.createRigidArea(new Dimension(0, 3)));
+            controlPanelSubmenu.add(component);
+            controlPanelSubmenu.add(Box.createRigidArea(new Dimension(0, 3)));
         }
 
-        controlPanel.setVisible(false);
+        controlPanelSubmenu.setVisible(false);
 
-        return controlPanel;
+        return controlPanelSubmenu;
     }
 
 
@@ -351,51 +347,15 @@ public abstract class General_GUI {
      */
     private JPanel createInformationPanel() {
         // group the above UI items into a panel
-        JPanel controlPanel = new JPanel();
-        BoxLayout boxLayout = new BoxLayout(controlPanel, BoxLayout.Y_AXIS);
-        controlPanel.setLayout(boxLayout);
-        controlPanel.setLocation(10, 10);
-        controlPanel.setSize(BUTTON_WIDTH + 10, 130);
+        
+        
+        panelInformation = new InformationAirship();
+        controlPanel = panelInformation;
+        
+        controlPanel.setLocation(10, 5);
+        controlPanel.setSize(BUTTON_WIDTH + 10, 135);
         controlPanel.setBackground(new Color(0, 0, 0, 200));
-
-        // title
-        JTextField txtTitle = new JTextField();
-        txtTitle.setText("Aeronave No. X");
-        txtTitle.setHorizontalAlignment(SwingConstants.CENTER);
-        txtTitle.setFont(new Font(txtTitle.getFont().getName(), txtTitle.getFont().getStyle(), 20));
-        txtTitle.setMaximumSize(new Dimension(600, 30));
-        txtTitle.setBackground(new Color(0, 134, 191, 255));
-        txtTitle.setForeground(Color.WHITE);
-        txtTitle.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-
-        //Label "MGRS"
-        JLabel mgrsLabel = new JLabel();
-        mgrsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        mgrsLabel.setText("     MGRS: " + mgrs);
-        mgrsLabel.setForeground(Color.WHITE);
-        mgrsLabel.setFont(new Font(txtTitle.getFont().getName(), txtTitle.getFont().getStyle(), 14));
-
-        //Label "Elevacion"
-        JLabel elevacionLabel = new JLabel();
-        elevacionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        elevacionLabel.setText(" Elevación: " + elevacion);
-        elevacionLabel.setForeground(Color.WHITE);
-        elevacionLabel.setFont(new Font(txtTitle.getFont().getName(), txtTitle.getFont().getStyle(), 14));
-
-        //Label "Velocidad"
-        JLabel velocidadLabel = new JLabel();
-        velocidadLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        velocidadLabel.setText("Velocidad: " + velocidad);
-        velocidadLabel.setForeground(Color.WHITE);
-        velocidadLabel.setFont(new Font(txtTitle.getFont().getName(), txtTitle.getFont().getStyle(), 14));
-
-        controlPanel.add(txtTitle);
-        controlPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        controlPanel.add(mgrsLabel);
-        controlPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        controlPanel.add(elevacionLabel);
-        controlPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        controlPanel.add(velocidadLabel);
+        
 
         return controlPanel;
     }
@@ -465,4 +425,9 @@ public abstract class General_GUI {
         jMap.addMapOverlay(new MouseClickedOverlay(contentPane));
         return jMap;
     }
+
+    public InformationAirship getControlPanel() {
+        return panelInformation;
+    }   
+    
 }

@@ -39,7 +39,7 @@ public class Aeronave_GUI extends General_GUI {
 
     //private final JPanel gpsPanel = super.createButtonPanel("gpsOff", 100, 145);
     private final JScrollPane subGPS;
-    private final String offset = "                          ";
+    private final String offset = "                                                            ";
     private SerialPortGPSWatcher gpsWatcher;
 
     public Aeronave_GUI() throws Exception {
@@ -111,7 +111,7 @@ public class Aeronave_GUI extends General_GUI {
         //GPS layer
         try {
             SerialPortInfo myPortInfo = new SerialPortInfo("COM7", BaudRate.BAUD_9600, Parity.NONE, StopBits.ONE, 8);
-            GeoPositionListener myGeo = new GeoPositionListener(map, super.gpsLayer);
+            GeoPositionListener myGeo = new GeoPositionListener(map, super.gpsLayer, this);
 
             gpsWatcher = new SerialPortGPSWatcher(myPortInfo, myGeo);
 

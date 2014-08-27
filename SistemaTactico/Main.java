@@ -21,16 +21,16 @@ public class Main{
         
         
         // Ejemplo tipo Tema
-        String current = new java.io.File( "." ).getCanonicalPath();
+        /*String current = new java.io.File( "." ).getCanonicalPath();
         System.out.println(current+"\\build\\classes\\Archivos\\Imagenes");
+        */
+         
+        Publicador comandoCentral = new Publicador("127.0.0.1");
         
-        /* 
-        Publicador comandoCentral = new Publicador("0.0.0.0");
-        
-        Consumidor aeronave1 = new Consumidor("192.168.1.67"); //189.245.124.120
-        Consumidor aeronave2 = new Consumidor("192.168.1.67");
-        Consumidor aeronave3 = new Consumidor("192.168.1.67");
-        Consumidor aeronave4 = new Consumidor("192.168.1.67");
+        Consumidor aeronave1 = new Consumidor("127.0.0.1"); //189.245.124.120
+        Consumidor aeronave2 = new Consumidor("127.0.0.1");
+        Consumidor aeronave3 = new Consumidor("127.0.0.1");
+        Consumidor aeronave4 = new Consumidor("127.0.0.1");
            
         aeronave1.enviarMensaje();
         aeronave2.enviarMensaje();
@@ -41,6 +41,8 @@ public class Main{
         comandoCentral.enviarMensaje("El mensaje cambio");
         comandoCentral.enviarMensaje("El mensaje cambio2q3423");
         comandoCentral.enviarMensaje("Enviando otro mensaje");
+        comandoCentral.enviarMensaje("Enviando otro mensaje");
+        
         
         
         
@@ -49,7 +51,7 @@ public class Main{
         aeronave2.cerrarConexion();
         aeronave3.cerrarConexion();
         aeronave4.cerrarConexion();
-        aeronave2.cerrarConexion();*/
+        aeronave2.cerrarConexion();
         
         //System.out.println("hola como estas");
        
