@@ -7,6 +7,7 @@ package SIG_ArcGIS;
 
 import GUI.General_GUI;
 import GUI.InformationAirship;
+import JMS_ActiveMQ.Consumidor;
 import com.esri.core.geometry.CoordinateConversion;
 import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.GeometryEngine;
@@ -38,11 +39,13 @@ public class GeoPositionListener implements GPSEventListener {
     JMap jMap;
     GraphicsLayer gpsLayer;
     General_GUI generalGUI;
+    Consumidor consumidor;
 
-    public GeoPositionListener(JMap jMap, GraphicsLayer gpsLayer, General_GUI generalGUI) {
+    public GeoPositionListener(JMap jMap, GraphicsLayer gpsLayer, General_GUI generalGUI, Consumidor consumidor) {
         this.jMap = jMap;
         this.gpsLayer = gpsLayer;
         this.generalGUI = generalGUI;
+        this.consumidor = consumidor;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class GeoPositionListener implements GPSEventListener {
 
     @Override
     public void onPositionChanged(GeoPosition newPosition) {
-        // Here we have to send the information to the central command  
+        //setting format to the showing number
         DecimalFormat decimal = new DecimalFormat("#.####");
         DecimalFormat decimalE = new DecimalFormat("#.#");
 

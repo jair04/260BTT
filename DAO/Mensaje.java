@@ -7,6 +7,7 @@
 package DAO;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  *
@@ -14,9 +15,27 @@ import java.io.Serializable;
  */
 public class Mensaje implements Serializable{
    
+    //it is used when the aiship send the actualization of its position 
     private Aeronave aeronave;
+   
+    //message type
     private int tipo;
+    
+    //message descripcino 
     private String descripcion;
+    
+    //this variable is used when the airship receive the the reply result about the connection to the central command
+    private boolean peticionAceptada;
+    
+    //variable to send the mision´s updated information to the airship 
+    private HashMap<String,Aeronave> mision = new HashMap<>();
+    
+    public Mensaje(){
+            this.peticionAceptada = false;
+            this.tipo = 0;
+            this.descripcion = "";
+            this.mision = null;
+    }    
 
     public Mensaje(int tipo,Aeronave aeronave) {
         this.tipo = tipo;
@@ -48,4 +67,28 @@ public class Mensaje implements Serializable{
         this.descripcion = descripcion;
     }
 
+    public boolean isPeticionAceptada() {
+        return peticionAceptada;
+    }
+
+    public void setPeticionAceptada(boolean peticionAceptada) {
+        this.peticionAceptada = peticionAceptada;
+    }
+
+    public HashMap<String, Aeronave> getMision() {
+        return mision;
+    }
+
+    public void setMision(HashMap<String, Aeronave> mision) {
+        this.mision = mision;
+    }
+
+    public Aeronave getAeronaveMision(String key){
+        return this.mision.get(key);
+    }
+    
+    public void addAeronaveMision(Aeronave aeronave){
+        this.mision.put(aeronave.getMatricula(), aeronave);
+    }
+    
 }

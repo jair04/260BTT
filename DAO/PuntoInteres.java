@@ -22,7 +22,7 @@ public class PuntoInteres implements Serializable{
     
     //asignado por el comando o la aeronave
     private int asignacion; 
-
+    
     public PuntoInteres() {
     }
 
@@ -54,6 +54,11 @@ public class PuntoInteres implements Serializable{
 
     public void setAsignacion(int asignacion) {
         this.asignacion = asignacion;
+    }
+
+    @Override
+    public String toString() {
+        return "PuntoInteres{" + "descripcion=" + descripcion + ", posicion=" + posicion + ", asignacion=" + asignacion + '}';
     }
     
     

@@ -12,8 +12,10 @@ import java.io.IOException;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 
 /**
  *
@@ -24,16 +26,18 @@ public class ButtonPanel extends JPanel {
     private int state = -1;
     final private String currentPath;
     private final JScrollPane submenu;
+    private final String image;
 
-    public ButtonPanel(final String image, int x, int y, JScrollPane  submenu) throws IOException {
+    public ButtonPanel(final String image, int x, int y, JScrollPane submenu) throws IOException {
+        this.image = image;
         this.currentPath = new java.io.File(".").getCanonicalPath();
         this.submenu = submenu;
-        
+
         BoxLayout boxLayout = new BoxLayout(this, BoxLayout.Y_AXIS);
         this.setLayout(boxLayout);
         this.setLocation(x, y);
         this.setSize(85, 85);
-        this.setBackground(new Color(0,0,0, 200));
+        this.setBackground(new Color(0, 0, 0, 200));
 
         //Label which contain the image
         final JLabel imageLabel = new JLabel();
@@ -56,8 +60,9 @@ public class ButtonPanel extends JPanel {
                 } else {
                     imageLabel.setIcon(new ImageIcon(iconImageEvent + image + "Clicked.png"));
                     showSubmenu();
-                }                
+                }
             }
+
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 Cursor cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
@@ -70,11 +75,31 @@ public class ButtonPanel extends JPanel {
         this.add(imageLabel);
     }
 
-    public void showSubmenu(){
-        submenu.setVisible(true);
+    public void showSubmenu() {
+        if (this.image.equals("conectServer")) {
+            String[] options = {"Conectar","Cancelar"};
+            JPanel panel = new JPanel();
+            JLabel lbl = new JLabel("Dirección IP: ");
+            JTextField txt = new JTextField(10);
+            panel.add(lbl);
+            panel.add(txt);
+            int selectedOption = JOptionPane.showOptionDialog(null, panel, "The Title", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+            if (selectedOption == 0) {
+                System.out.println("Conectar");
+            }
+        } else {
+            submenu.setVisible(true);
+        }
+
     }
-    public void hideSubmenu(){
-        submenu.setVisible(false);
+
+    public void hideSubmenu() {
+        if (this.image.equals("conectServer")) {
+
+        } else {
+            submenu.setVisible(false);
+        }
     }
 
 }

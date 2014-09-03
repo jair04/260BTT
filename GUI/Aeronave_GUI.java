@@ -5,6 +5,7 @@
  */
 package GUI;
 
+import JMS_ActiveMQ.Consumidor;
 import SIG_ArcGIS.GeoPositionListener;
 import com.esri.core.gps.BaudRate;
 import com.esri.core.gps.GPSException;
@@ -41,6 +42,7 @@ public class Aeronave_GUI extends General_GUI {
     private final JScrollPane subGPS;
     private final String offset = "                                                            ";
     private SerialPortGPSWatcher gpsWatcher;
+    private Consumidor consumidor;
 
     public Aeronave_GUI() throws Exception {
         //GPS submenu
@@ -56,7 +58,7 @@ public class Aeronave_GUI extends General_GUI {
         
         try {
             gpsPanel = new ButtonPanel("gpsOff", 100, 145, subGPS);
-            conectServer = new ButtonPanel("conectServer", 10, 145, subGPS);
+            conectServer = new ButtonPanel("conectServer", 10, 145, null);
         } catch (IOException ex) {
             Logger.getLogger(Aeronave_GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -106,12 +108,12 @@ public class Aeronave_GUI extends General_GUI {
         return new ScrollPanel(super.createSubmenu_panel(components, true), 185, 145);
     }
 
-    //starting to read the NMEA senteces whiche were received from the serial port 
+    //starting to read the NMEA senteces which were received from the serial port 
     protected void startGPS(String COMport) {
         //GPS layer
         try {
             SerialPortInfo myPortInfo = new SerialPortInfo("COM7", BaudRate.BAUD_9600, Parity.NONE, StopBits.ONE, 8);
-            GeoPositionListener myGeo = new GeoPositionListener(map, super.gpsLayer, this);
+            GeoPositionListener myGeo = new GeoPositionListener(map, super.gpsLayer, this, this.consumidor);
 
             gpsWatcher = new SerialPortGPSWatcher(myPortInfo, myGeo);
 
@@ -131,7 +133,7 @@ public class Aeronave_GUI extends General_GUI {
         } catch (GPSException ex) {
             Logger.getLogger(Aeronave_GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+    }  
 
     public static void main(String args[]) {
         SwingUtilities.invokeLater(new Runnable() {

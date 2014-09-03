@@ -5,6 +5,7 @@ import JMS_ActiveMQ.Consumidor;
 import JMS_ActiveMQ.Publicador;
 import DAO.Aeronave;
 import DAO.Mensaje;
+import DAO.Piloto;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -24,34 +25,43 @@ public class Main{
         /*String current = new java.io.File( "." ).getCanonicalPath();
         System.out.println(current+"\\build\\classes\\Archivos\\Imagenes");
         */
-         
+        
+        Piloto piloto1 = new Piloto("RORE", "Jair", "Roa", "Reyes", 21);
+        Aeronave ae1 = new Aeronave("123", piloto1, null);
+        
+        ae1.readFileInformation();
+        
         Publicador comandoCentral = new Publicador("127.0.0.1");
         
-        Consumidor aeronave1 = new Consumidor("127.0.0.1"); //189.245.124.120
-        Consumidor aeronave2 = new Consumidor("127.0.0.1");
-        Consumidor aeronave3 = new Consumidor("127.0.0.1");
-        Consumidor aeronave4 = new Consumidor("127.0.0.1");
-           
-        aeronave1.enviarMensaje();
-        aeronave2.enviarMensaje();
-        aeronave3.enviarMensaje();
-        aeronave4.enviarMensaje();
+        Consumidor aeronave1 = new Consumidor("127.0.0.1",ae1); //189.245.124.120
+        Consumidor aeronave2 = new Consumidor("127.0.0.1",ae1);
+        Consumidor aeronave3 = new Consumidor("127.0.0.1",ae1);
+        Consumidor aeronave4 = new Consumidor("127.0.0.1",ae1);
+          
+        aeronave1.sendConnectionRequest();
+        aeronave2.sendConnectionRequest();
+        aeronave3.sendConnectionRequest();
+        aeronave4.sendConnectionRequest();
         
-        comandoCentral.enviarMensaje("hola como estan");        
-        comandoCentral.enviarMensaje("El mensaje cambio");
-        comandoCentral.enviarMensaje("El mensaje cambio2q3423");
-        comandoCentral.enviarMensaje("Enviando otro mensaje");
-        comandoCentral.enviarMensaje("Enviando otro mensaje");
+        /*
+        mensaje1.setTipo(Constante.MISION_ACTUALIZADA);
+        comandoCentral.enviarMensaje(mensaje1);        
+        comandoCentral.enviarMensaje(mensaje1);
+        comandoCentral.enviarMensaje(mensaje1);
+        comandoCentral.enviarMensaje(mensaje1);
+        comandoCentral.enviarMensaje(mensaje1);
+        */
         
         
         
-        
-        comandoCentral.cerrarConexion();
+        //comandoCentral.cerrarConexion();
+       /*
         aeronave1.cerrarConexion();
         aeronave2.cerrarConexion();
         aeronave3.cerrarConexion();
         aeronave4.cerrarConexion();
         aeronave2.cerrarConexion();
+        */
         
         //System.out.println("hola como estas");
        

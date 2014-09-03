@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package DAO;
 
 import SIG_ArcGIS.GeoPositionListener;
@@ -12,6 +11,8 @@ import com.esri.core.gps.GPSEventListener;
 import com.esri.core.gps.GPSException;
 import com.esri.core.gps.IGPSWatcher;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
@@ -26,60 +27,26 @@ import javax.jms.JMSException;
  *
  * @author Jair
  */
-public class Aeronave implements Serializable{
-    
-    //informacion general
-    private String ipAeronave;
-    private String ipComando;
+public class Aeronave implements Serializable {
+
+    /*Personal information about airship pilot*/
     private String matricula;
     private Piloto piloto;
-    
+
     /*Almacena informacioni geografica de una aeronave en un punto especifivo*/
     private Posicion posicion;
-    
+
     /*Puntos de interes que han sido agregador*/
     List<PuntoInteres> puntosInteres;
-    
-    //tema en el cual se publicaran los mensajes
-    private String tema;
 
-    public Aeronave(String ipAeronave, String ipComando, String matricula, Piloto piloto, Posicion posicion, List<PuntoInteres> puntosInteres, String tema) {
-        this.ipAeronave = ipAeronave;
-        this.ipComando = ipComando;
-        this.matricula = matricula;
-        this.piloto = piloto;
-        this.posicion = posicion;
-        this.puntosInteres = puntosInteres;
-        this.tema = tema;
-    }
-
-       
     public Aeronave() {
     }
 
-    public Aeronave(String ipAeronave,String ipComando, String matricula, Piloto piloto) {
-        this.ipAeronave = ipAeronave;
-        this.ipComando = ipComando;
-        this.matricula = matricula;
-        this.piloto = piloto;
-        this.puntosInteres = new ArrayList<>();
-    }
-
-    public Aeronave(String ipAeronave,String ipComando, String matricula, Piloto piloto, Posicion posicion) {
-        this.ipAeronave = ipAeronave;
-        this.ipComando = ipComando;
+    public Aeronave(String matricula, Piloto piloto, Posicion posicion) {
         this.matricula = matricula;
         this.piloto = piloto;
         this.posicion = posicion;
         this.puntosInteres = new ArrayList<>();
-    }
-
-    public String getIpAeronave() {
-        return ipAeronave;
-    }
-
-    public void setIpAeronave(String ipAeronave) {
-        this.ipAeronave = ipAeronave;
     }
 
     public String getMatricula() {
@@ -106,39 +73,29 @@ public class Aeronave implements Serializable{
         this.posicion = posicion;
     }
 
-    public String getIpComando() {
-        return ipComando;
+    public void setPuntoInteres(PuntoInteres puntoInteres) {
+        this.puntosInteres.add(puntoInteres);
     }
 
-    public void setIpComando(String ipComando) {
-        this.ipComando = ipComando;
+    public List<PuntoInteres> getPuntosInteres() {
+        return this.puntosInteres;
     }
 
-    public String getTema() {
-        return tema;
-    }
-
-    public void setTema(String tema) {
-        this.tema = tema;
-    }
-    
     @Override
     public String toString() {
-        return "Aeronave{" + "ip=" 
-                           + ipAeronave 
-                           + ", matricula=" 
-                           + matricula 
-                           + ", piloto=" 
-                           + piloto 
-                           + ", posicion=" 
-                           + posicion 
-                           + ", tipo_peticion=" 
-                           + '}';
+        return "Aeronave{" + ", matricula="
+                + matricula
+                + ", piloto="
+                + piloto
+                + ", posicion="
+                + posicion
+                + ", tipo_peticion="
+                + '}';
     }
 
     @Override
     public int hashCode() {
-        return this.ipAeronave.hashCode()+this.matricula.hashCode(); 
+        return this.matricula.hashCode();
     }
 
     @Override
@@ -150,46 +107,52 @@ public class Aeronave implements Serializable{
             return false;
         }
         final Aeronave other = (Aeronave) obj;
-        if (!Objects.equals(this.ipAeronave, other.ipAeronave)) {
-            return false;
-        }
         if (!Objects.equals(this.matricula, other.matricula)) {
             return false;
         }
         return true;
     }
 
-    public void realizarConexion() throws JMSException{
+    public void realizarConexion() throws JMSException {
     }
-    
+
     //lee sentencias NMEA 0183 de archivo TXT y las envia al comando central
-    public void enviarInformacion() throws GPSException{    
-        
+    public void enviarInformacion() throws GPSException {
+
         //Ruta absoluta del archivo
         String ruta = getClass().getResource("/Archivos/GPS/GPSReader.txt").toString();
-        ruta = ruta.substring(6,ruta.length());
-        
+        ruta = ruta.substring(6, ruta.length());
+
         /*
-            Lectura del GPS y envio de la informacion actualizada
-            al comando central a través de "Interfaz:GeoPositionListener.java"
-        */
+         Lectura del GPS y envio de la informacion actualizada
+         al comando central a través de "Interfaz:GeoPositionListener.java"
+         */
         /*
-        GPSEventListener gpsListener = new GeoPositionListener(this);
-        IGPSWatcher gpsWatcher = new FileGPSWatcher(ruta,500,false,gpsListener);
-        gpsWatcher.start();*/
+         GPSEventListener gpsListener = new GeoPositionListener(this);
+         IGPSWatcher gpsWatcher = new FileGPSWatcher(ruta,500,false,gpsListener);
+         gpsWatcher.start();*/
     }
-    
-    //leer GPS desde puerto COM
-    public void leerGPSCOM(){
-    
+
+    public void readFileInformation() throws FileNotFoundException, IOException {
+        //current directory
+        final String currentPath = new java.io.File(".").getCanonicalPath();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(currentPath + "\\build\\classes\\Archivos\\Datos\\informacionPersonal.txt"))) {
+            
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while (line != null) {
+                sb.append(line);
+                sb.append(System.lineSeparator());
+                line = br.readLine();
+                System.out.println(line+" **");
+            }
+            String everything = sb.toString();
+        }
     }
-    
-    //lee la informacion que publica el comando central
-    public Aeronave recibirInfoComando(){
-        return null;
-    }
-    
-    private String obtenerIP() throws MalformedURLException, IOException{
+
+    private String obtenerIP() throws MalformedURLException, IOException {
         URL whatismyip = new URL("http://checkip.amazonaws.com");
         BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
         return in.readLine();
