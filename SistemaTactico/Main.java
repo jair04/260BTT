@@ -26,14 +26,14 @@ public class Main{
         System.out.println(current+"\\build\\classes\\Archivos\\Imagenes");
         */
         
-        Piloto piloto1 = new Piloto("RORE", "Jair", "Roa", "Reyes", 21);
+       /* Piloto piloto1 = new Piloto("RORE", "Jair", "Roa", "Reyes", 21);
         Aeronave ae1 = new Aeronave("123", piloto1, null);
         
-        ae1.readFileInformation();
+        ae1.readFileInformation();*/
         
         Publicador comandoCentral = new Publicador("127.0.0.1");
         
-        Consumidor aeronave1 = new Consumidor("127.0.0.1",ae1); //189.245.124.120
+        /*Consumidor aeronave1 = new Consumidor("127.0.0.1",ae1); //189.245.124.120
         Consumidor aeronave2 = new Consumidor("127.0.0.1",ae1);
         Consumidor aeronave3 = new Consumidor("127.0.0.1",ae1);
         Consumidor aeronave4 = new Consumidor("127.0.0.1",ae1);
@@ -41,7 +41,7 @@ public class Main{
         aeronave1.sendConnectionRequest();
         aeronave2.sendConnectionRequest();
         aeronave3.sendConnectionRequest();
-        aeronave4.sendConnectionRequest();
+        aeronave4.sendConnectionRequest();*/
         
         /*
         mensaje1.setTipo(Constante.MISION_ACTUALIZADA);

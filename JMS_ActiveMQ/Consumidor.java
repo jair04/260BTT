@@ -21,36 +21,42 @@ import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
+import javax.swing.JOptionPane;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 /**
  *
  * @author Jair
  */
-public class Consumidor implements MessageListener {
+public class Consumidor implements MessageListener{
 
-    private final ActiveMQConnectionFactory connectionFactory;
-    private final Connection connection;
-    private final Session session;
+    private ActiveMQConnectionFactory connectionFactory;
+    private Connection connection;
+    private Session session;
     private Destination destination;
     private MessageConsumer consumer;
     private final Aeronave aeronave;
     private Mensaje mensaje;
+    private String ip;
 
-    public Consumidor(String ip, Aeronave aeronave) throws JMSException{
+    public Consumidor(String ip, Aeronave aeronave){
+        mensaje = new Mensaje();
         this.aeronave = aeronave;
-        
+        this.ip = ip;       
+    }
+
+    public void startConnection() throws JMSException{                
         // Create a ConnectionFactory
-        connectionFactory = new ActiveMQConnectionFactory("tcp://" + ip + ":61616");
+        connectionFactory = new ActiveMQConnectionFactory("tcp://" + this.ip + ":61616");
 
         // Create a Connection
         connection = connectionFactory.createConnection();
         connection.start();
 
         // Create a Session
-        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);        
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE); 
     }
-
+    
     public void closeConnection() throws JMSException {
         //Clean up
         consumer.close();
@@ -97,6 +103,22 @@ public class Consumidor implements MessageListener {
         consumer = session.createConsumer(destination);
         consumer.setMessageListener(this);
     }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public Mensaje getMensaje() {
+        return mensaje;
+    }
+
+    public void setMensaje(Mensaje mensaje) {
+        this.mensaje = mensaje;
+    }   
     
     @Override
     public void onMessage(Message msg) {
@@ -106,9 +128,11 @@ public class Consumidor implements MessageListener {
             
             if(mensajeResponse.getTipo()==Constante.RESPUESTA_PETICION_CONEXION){
                 if(mensajeResponse.isPeticionAceptada()){
-                    this.establishConnection();
+                    JOptionPane.showMessageDialog(null, "Peticion Aceptada", "Informacion", JOptionPane.INFORMATION_MESSAGE);
                     this.mensaje.setPeticionAceptada(true);
-                    System.out.println("peticion aceptada");
+                    this.establishConnection();
+                }else{
+                    JOptionPane.showMessageDialog(null, "Peticion rechazada", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }else if(mensajeResponse.getTipo()== Constante.MISION_ACTUALIZADA){
                 System.out.println("datos mision ["+mensajeResponse.getAeronave().getMatricula()+"]");

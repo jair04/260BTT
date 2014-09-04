@@ -46,6 +46,7 @@ public class GeoPositionListener implements GPSEventListener {
         this.gpsLayer = gpsLayer;
         this.generalGUI = generalGUI;
         this.consumidor = consumidor;
+        System.out.println(this.consumidor+"-*-*-*-*");
     }
 
     @Override
@@ -65,8 +66,10 @@ public class GeoPositionListener implements GPSEventListener {
         //setting format to the showing number
         DecimalFormat decimal = new DecimalFormat("#.####");
         DecimalFormat decimalE = new DecimalFormat("#.#");
+        
 
         if (newPosition != null) {   
+            System.out.println(this.consumidor.getMensaje().isPeticionAceptada()+"+*+*+*+*+*");
             
             // Changing reference to mapPoint
             Point point = new Point(newPosition.getLocation().getLongitude(), newPosition.getLocation().getLatitude());

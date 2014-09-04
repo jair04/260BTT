@@ -5,10 +5,14 @@
  */
 package GUI;
 
+import JMS_ActiveMQ.Consumidor;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.jms.JMSException;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -27,6 +31,7 @@ public class ButtonPanel extends JPanel {
     final private String currentPath;
     private final JScrollPane submenu;
     private final String image;
+    Consumidor consumidor;
 
     public ButtonPanel(final String image, int x, int y, JScrollPane submenu) throws IOException {
         this.image = image;
@@ -59,7 +64,13 @@ public class ButtonPanel extends JPanel {
                     hideSubmenu();
                 } else {
                     imageLabel.setIcon(new ImageIcon(iconImageEvent + image + "Clicked.png"));
-                    showSubmenu();
+                    try {
+                        showSubmenu();
+                    } catch (JMSException ex) {
+                        JOptionPane.showMessageDialog(null, "No se encontro el servidor", "Error", JOptionPane.ERROR_MESSAGE);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ButtonPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
 
@@ -75,7 +86,7 @@ public class ButtonPanel extends JPanel {
         this.add(imageLabel);
     }
 
-    public void showSubmenu() {
+    public void showSubmenu() throws JMSException, InterruptedException {
         if (this.image.equals("conectServer")) {
             String[] options = {"Conectar","Cancelar"};
             JPanel panel = new JPanel();
@@ -83,10 +94,12 @@ public class ButtonPanel extends JPanel {
             JTextField txt = new JTextField(10);
             panel.add(lbl);
             panel.add(txt);
-            int selectedOption = JOptionPane.showOptionDialog(null, panel, "The Title", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            int selectedOption = JOptionPane.showOptionDialog(null, panel, "Informacion", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
             if (selectedOption == 0) {
-                System.out.println("Conectar");
+                this.consumidor.setIp(txt.getText());
+                this.consumidor.startConnection();     
+                this.consumidor.sendConnectionRequest();
             }
         } else {
             submenu.setVisible(true);
@@ -101,5 +114,15 @@ public class ButtonPanel extends JPanel {
             submenu.setVisible(false);
         }
     }
+
+    public Consumidor getConsumidor() {
+        return consumidor;
+    }
+
+    public void setConsumidor(Consumidor consumidor) {
+        this.consumidor = consumidor;
+    }
+    
+    
 
 }

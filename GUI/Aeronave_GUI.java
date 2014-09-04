@@ -5,6 +5,7 @@
  */
 package GUI;
 
+import DAO.Aeronave;
 import JMS_ActiveMQ.Consumidor;
 import SIG_ArcGIS.GeoPositionListener;
 import com.esri.core.gps.BaudRate;
@@ -45,6 +46,11 @@ public class Aeronave_GUI extends General_GUI {
     private Consumidor consumidor;
 
     public Aeronave_GUI() throws Exception {
+        //Filling airchip general information 
+        Aeronave aeronave = new Aeronave();
+        aeronave.readFileInformation();        
+        this.consumidor = new Consumidor("", aeronave);
+        
         //GPS submenu
         subGPS = this.getGPS_PanelSubmenu();
         contentPane.add(subGPS);
@@ -58,7 +64,10 @@ public class Aeronave_GUI extends General_GUI {
         
         try {
             gpsPanel = new ButtonPanel("gpsOff", 100, 145, subGPS);
+            
+            //Here we send the consumer, then inside we sent the ip and establish the comunication 
             conectServer = new ButtonPanel("conectServer", 10, 145, null);
+            conectServer.setConsumidor(this.consumidor);
         } catch (IOException ex) {
             Logger.getLogger(Aeronave_GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -116,8 +125,8 @@ public class Aeronave_GUI extends General_GUI {
             GeoPositionListener myGeo = new GeoPositionListener(map, super.gpsLayer, this, this.consumidor);
 
             gpsWatcher = new SerialPortGPSWatcher(myPortInfo, myGeo);
-
             super.gpsLayer = new GPSLayer(gpsWatcher);
+            
             super.gpsLayer.setMode(GPSLayer.Mode.NAVIGATION);
             super.gpsLayer.setNavigationPointHeightFactor(0.5);
             super.layersList.add(super.gpsLayer);

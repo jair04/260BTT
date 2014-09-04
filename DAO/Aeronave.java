@@ -136,19 +136,33 @@ public class Aeronave implements Serializable {
     public void readFileInformation() throws FileNotFoundException, IOException {
         //current directory
         final String currentPath = new java.io.File(".").getCanonicalPath();
+        
 
         try (BufferedReader br = new BufferedReader(new FileReader(currentPath + "\\build\\classes\\Archivos\\Datos\\informacionPersonal.txt"))) {
-            
-            StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
 
-            while (line != null) {
-                sb.append(line);
-                sb.append(System.lineSeparator());
-                line = br.readLine();
-                System.out.println(line+" **");
-            }
-            String everything = sb.toString();
+            Piloto pilotoAux = new Piloto();
+            
+            String line;
+            
+            line = br.readLine();
+            pilotoAux.setMatricula(line);
+
+            line = br.readLine();
+            pilotoAux.setNombre(line);
+            
+            line = br.readLine();
+            pilotoAux.setApellidoPaterno(line);
+            
+            line = br.readLine();
+            pilotoAux.setApellidoMaterno(line);
+            
+            line = br.readLine();
+            pilotoAux.setEdad(Integer.parseInt(line));
+            
+            line = br.readLine();
+            this.setMatricula(line);
+            
+            this.setPiloto(pilotoAux);           
         }
     }
 
