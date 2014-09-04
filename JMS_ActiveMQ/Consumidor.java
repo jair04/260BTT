@@ -69,7 +69,7 @@ public class Consumidor implements MessageListener{
         this.sendMessage(request);
     }
      
-    private void sendMessage(final Serializable mensaje) throws JMSException, InterruptedException {
+    public void sendMessage(final Serializable mensaje) throws JMSException, InterruptedException {
         Destination destinationAux = this.session.createQueue(Constante.NOMBRE_COLA);
         MessageProducer producerAux = this.session.createProducer(destinationAux);
 

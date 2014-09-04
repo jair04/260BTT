@@ -44,6 +44,8 @@ public class Publicador implements MessageListener {
     private final MessageProducer producer;
     private final MessageProducer replyProducer;
     private final String ip;
+    HashMap<String, Aeronave> mision = new HashMap<>();
+    
 
     /*
      ip: ip donde se esta ejecutando la aplicacion del comando central
@@ -136,6 +138,7 @@ public class Publicador implements MessageListener {
                 if(opc == 0){
                     //adding the ariship to the mission
                     resultOpc = true;
+                    mision.put(mensaje.getAeronave().getMatricula(), mensaje.getAeronave());
                 }
                 
                 //True if the command has acepted the petition, otherwise false
@@ -150,7 +153,12 @@ public class Publicador implements MessageListener {
                 System.out.println("Peticion conectarAeronave  [" + mensaje.getAeronave().getMatricula() + "] al comando central");
                 
             } else if (mensaje.getTipo() == Constante.ACTUALIZAR_AERONAVE) {
-
+                   System.out.println(      mensaje.getAeronave().getMatricula()+","
+                                          + mensaje.getAeronave().getPosicion().getLatitud()+","
+                                          + mensaje.getAeronave().getPosicion().getLongitud()+","
+                                          + this.mision.size()
+                           
+                   );
             }
         } catch (JMSException ex) {
             Logger.getLogger(Publicador.class.getName()).log(Level.SEVERE, null, ex);

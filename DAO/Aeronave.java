@@ -40,6 +40,7 @@ public class Aeronave implements Serializable {
     List<PuntoInteres> puntosInteres;
 
     public Aeronave() {
+        this.puntosInteres = new ArrayList<>();
     }
 
     public Aeronave(String matricula, Piloto piloto, Posicion posicion) {
