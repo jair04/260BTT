@@ -135,7 +135,7 @@ public class Consumidor implements MessageListener{
                     JOptionPane.showMessageDialog(null, "Peticion rechazada", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }else if(mensajeResponse.getTipo()== Constante.MISION_ACTUALIZADA){
-                System.out.println("datos mision ["+mensajeResponse.getAeronave().getMatricula()+"]");
+                System.out.println("mision actualizada");
             }
 
         } catch (JMSException ex) {

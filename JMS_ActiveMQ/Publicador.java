@@ -96,9 +96,8 @@ public class Publicador implements MessageListener {
         objMessage.setObject(mensaje);
 
         // Tell the producer to send the message
-        System.out.println("Sent message: " + objMessage.hashCode());
         producer.send(objMessage);
-        Thread.sleep(10);
+        //Thread.sleep(10);
     }
 
     public void cerrarConexion() throws JMSException {
@@ -121,10 +120,12 @@ public class Publicador implements MessageListener {
 
         } catch (JMSException ex) {
             Logger.getLogger(Publicador.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Publicador.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void procesarPeticion(Mensaje mensaje, Message msg) {
+    private void procesarPeticion(Mensaje mensaje, Message msg) throws InterruptedException {
         try {
             if (mensaje.getTipo() == Constante.CONECTAR_AERONAVE) {
                 //reply of the request
@@ -159,6 +160,13 @@ public class Publicador implements MessageListener {
                                           + this.mision.size()
                            
                    );
+                   
+                   //searching the aership and then updating its position
+                   this.mision.get(mensaje.getAeronave().getMatricula()).setPosicion(mensaje.getAeronave().getPosicion());
+                   
+                   Mensaje misionUpdated = new Mensaje(Constante.MISION_ACTUALIZADA, null);
+                   misionUpdated.setMision(this.mision);
+                   this.enviarMensaje(misionUpdated);
             }
         } catch (JMSException ex) {
             Logger.getLogger(Publicador.class.getName()).log(Level.SEVERE, null, ex);

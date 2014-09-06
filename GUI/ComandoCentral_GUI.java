@@ -10,6 +10,6 @@ package GUI;
  *
  * @author Jair
  */
-public class ComandoCentral_GUI {
+public class ComandoCentral_GUI{
     
 }
