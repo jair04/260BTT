@@ -39,15 +39,19 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -317,6 +321,7 @@ public abstract class General_GUI {
         navegacion.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent evt) {
+                
                 if (!navegacion.isSelected()) {
                     gpsLayer.setMode(GPSLayer.Mode.NAVIGATION);
                 } else {
@@ -328,7 +333,18 @@ public abstract class General_GUI {
         final JCheckBox estado = new JCheckBox("Doc 2" + offset);
         estado.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt) {
+            public void mousePressed(java.awt.event.MouseEvent evt) 
+            {
+                try 
+                {
+                    ShowerPDF p=new ShowerPDF("C:\\Users\\Jair\\Desktop\\Curriculum_Ingles.pdf");
+                    p.setVisible(true);
+                    p.setBounds(0, 0, 500, 500);
+                    p.setLocationRelativeTo(null);
+                } catch (IOException ex) 
+                {
+                    Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 if (!estado.isSelected()) {
                     //startGPS("COM7");
                 } else {
