@@ -11,11 +11,22 @@
 package GUI;
 
 import DAO.Aeronave;
+import DAO.Posicion;
+import DAO.PuntoInteres;
 import SIG_ArcGIS.MouseClickedOverlay;
 import com.esri.client.local.ArcGISLocalDynamicMapServiceLayer;
 import com.esri.core.geometry.Envelope;
+import com.esri.core.geometry.GeometryEngine;
+import com.esri.core.geometry.Point;
+import com.esri.core.geometry.SpatialReference;
+import com.esri.core.map.Graphic;
+import com.esri.core.symbol.FontWeight;
+import com.esri.core.symbol.SimpleMarkerSymbol;
+import com.esri.core.symbol.SimpleMarkerSymbol.Style;
+import com.esri.core.symbol.TextSymbol;
 import com.esri.map.ArcGISTiledMapServiceLayer;
 import com.esri.map.GPSLayer;
+import com.esri.map.GraphicsLayer;
 import com.esri.map.Grid;
 import com.esri.map.JMap;
 import com.esri.map.LayerList;
@@ -29,7 +40,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -65,11 +78,6 @@ public abstract class General_GUI {
     //current directory
     final private String currentPath = new java.io.File(".").getCanonicalPath();
 
-    //variables
-    private final String mgrs = "NaN";
-    private final String velocidad = "NaN";
-    private final String altitudValue = "NaN";
-
     //gps layer
     protected GPSLayer gpsLayer;
 
@@ -85,9 +93,6 @@ public abstract class General_GUI {
     //offset to strings
     private final String offset = "                                                                     ";
 
-    //List of conected users
-    List<Aeronave> aeronaves;
-    
     //model digital elevaion
     protected ArcGISLocalDynamicMapServiceLayer dynamicLayer;
 
@@ -95,10 +100,20 @@ public abstract class General_GUI {
     protected JScrollPane userSub;
     protected JScrollPane layerSub;
     protected JScrollPane docSub;
-    
+
     private JPanel controlPanel;
     private InformationAirship panelInformation;
 
+    //Graphic Layer
+    protected GraphicsLayer graphicsLayer;
+
+    //Graphic Layer update airships
+    protected GraphicsLayer graphicsLayerAirship;
+
+    //Interested points Array 
+    protected List<PuntoInteres> puntosInteres;
+    
+    Color[] color = {Color.ORANGE, Color.GREEN, Color.PINK, Color.RED};
     // ------------------------------------------------------------------------
     // Constructors
     // ------------------------------------------------------------------------
@@ -106,18 +121,19 @@ public abstract class General_GUI {
         // application content
         contentPane = createContentPane();
 
+        puntosInteres = new ArrayList<PuntoInteres>();
+
         // map
         map = createMap();
 
         // Panel airship information
         JPanel information = this.createInformationPanel();
 
-        
         //General buttons 
         //button users and submenu 
         userSub = this.getUsuers_submenu();
         ButtonPanel users = new ButtonPanel("users", 10, 235, userSub);
-        
+
         //button layer and submenu 
         layerSub = getLayer_submenu();
         ButtonPanel layers = new ButtonPanel("layers", 10, 325, layerSub);
@@ -131,7 +147,7 @@ public abstract class General_GUI {
 
         // add the panel to the main window
         contentPane.add(information);
-        
+
         contentPane.add(users);
         contentPane.add(userSub);
 
@@ -144,9 +160,6 @@ public abstract class General_GUI {
         contentPane.add(mapsLayer);
 
         contentPane.add(camera);
-        
-        
-        
 
     }
 
@@ -176,7 +189,6 @@ public abstract class General_GUI {
     /*
      * Creating generals submenu panels
      */
-    
     //Submenus button's users
     protected final JScrollPane getUsuers_submenu() {
         List<JComponent> componets = new ArrayList<>();
@@ -204,7 +216,7 @@ public abstract class General_GUI {
                 }
             }
         });
-        
+
         final JCheckBox uno = new JCheckBox("Uruario 3" + offset);
         uno.addMouseListener(new MouseAdapter() {
             @Override
@@ -216,7 +228,7 @@ public abstract class General_GUI {
                 }
             }
         });
-        
+
         final JCheckBox dos = new JCheckBox("Uruario 3" + offset);
         dos.addMouseListener(new MouseAdapter() {
             @Override
@@ -234,12 +246,10 @@ public abstract class General_GUI {
         componets.add(uno);
         componets.add(dos);
         /*
-        JPanel p = this.createSubmenu_panel(componets, true);
-        p.setLayout(new GridLayout(4, 2));*/
-        
+         JPanel p = this.createSubmenu_panel(componets, true);
+         p.setLayout(new GridLayout(4, 2));*/
+
         return new ScrollPanel(this.createSubmenu_panel(componets, true), 95, 235);
-        
-        
 
         //return this.createSubmenu_panel(95, 235, componets, true);
     }
@@ -271,8 +281,23 @@ public abstract class General_GUI {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 if (!mgrsLayer.isSelected()) {
                     map.getGrid().setVisibility(true);
-                } else {                    
+                } else {
                     map.getGrid().setVisibility(false);
+                }
+            }
+        });
+
+        // Points box which is into the Layer submenu
+        final JCheckBox points = new JCheckBox("Puntos Interes" + offset);
+        points.setSelected(true);
+        points.addMouseListener(new MouseAdapter() {
+            @Override
+            // event to show and hide the MGRS layer
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!points.isSelected()) {
+                    graphicsLayer.setVisible(true);
+                } else {
+                    graphicsLayer.setVisible(false);
                 }
             }
         });
@@ -280,6 +305,7 @@ public abstract class General_GUI {
         //Adding the components to the list, which will be added to the submenu panel
         components.add(dem);
         components.add(mgrsLayer);
+        components.add(points);
 
         //creating the submenu: setting postition, list of components
         return new ScrollPanel(this.createSubmenu_panel(components, true), 95, 325);
@@ -341,21 +367,81 @@ public abstract class General_GUI {
         return controlPanelSubmenu;
     }
 
+    //method which paints mark points
+    public void addGriphicPoint(Point point, Color color, String simbolText) {
+        this.graphicsLayer.setVisible(true);
+
+        SimpleMarkerSymbol blueDiamond = new SimpleMarkerSymbol(Color.DARK_GRAY, 26, Style.CIRCLE);
+        SimpleMarkerSymbol xCircle = new SimpleMarkerSymbol(color, 32, Style.CIRCLE);
+        TextSymbol textSymbol = new TextSymbol(13, simbolText, Color.WHITE);
+        textSymbol.setFontWeight(FontWeight.BOLD);
+
+        ((GraphicsLayer) this.map.getLayers().get(2)).addGraphic(new Graphic(point, xCircle));
+        ((GraphicsLayer) this.map.getLayers().get(2)).addGraphic(new Graphic(point, blueDiamond));
+        ((GraphicsLayer) this.map.getLayers().get(2)).addGraphic(new Graphic(point, textSymbol));
+
+        Posicion posicion = new Posicion(point.getX() + "", point.getY() + "", "", "", "", "");
+        this.puntosInteres.add(new PuntoInteres(simbolText, posicion, 0));
+
+    }
+
+    public void paintMissionLayer(String anfitrion, HashMap<String, Aeronave> mision) {
+        
+        layersList.remove(this.graphicsLayerAirship);
+        this.graphicsLayerAirship = new GraphicsLayer();
+        
+        
+        for (Map.Entry<String, Aeronave> entry : mision.entrySet()) {   
+            String key = entry.getKey();
+            Aeronave aeronave = entry.getValue();
+
+            if (!key.equals(anfitrion)) {
+                Posicion posicion = aeronave.getPosicion();
+                if (posicion != null) {
+                    Point point = new Point(Double.valueOf(
+                            posicion.getLongitud()),
+                            Double.valueOf(posicion.getLatitud()));
+
+                    Point mapPoint = (Point) GeometryEngine.project(
+                            point,
+                            SpatialReference.create(4326),
+                            this.map.getSpatialReference());
+
+                    SimpleMarkerSymbol circle = new SimpleMarkerSymbol(aeronave.getColor(), 12, Style.CIRCLE);
+                    this.graphicsLayerAirship.addGraphic(new Graphic(mapPoint, circle));
+                    
+                    for(PuntoInteres puntoInteres: aeronave.getPuntosInteres()){
+                        Point pointInteres = new Point(
+                                            Double.parseDouble(puntoInteres.getPosicion().getLatitud()),
+                                            Double.parseDouble(puntoInteres.getPosicion().getLongitud()));
+                        this.addGriphicPoint(pointInteres, aeronave.getColor(), puntoInteres.getDescripcion());
+                    }
+                    //System.out.println(aeronave.getPuntosInteres());
+                }
+
+            }
+        }
+        
+        //System.out.println("**************************************************************");
+        
+        layersList.add(this.graphicsLayerAirship);
+        
+    }
 
     /*
      * Crea el panel que contiene la informacion obtenida por el GPS
      */
     private JPanel createInformationPanel() {
         // group the above UI items into a panel
-        
-        
+
         panelInformation = new InformationAirship();
         controlPanel = panelInformation;
-        
+
         controlPanel.setLocation(10, 5);
         controlPanel.setSize(BUTTON_WIDTH + 10, 135);
         controlPanel.setBackground(new Color(0, 0, 0, 200));
-        
+
+        controlPanel.repaint(1);
 
         return controlPanel;
     }
@@ -365,7 +451,7 @@ public abstract class General_GUI {
      *
      * @return a window.
      */
-    protected JFrame createWindow() {
+    public JFrame createWindow() {
         JFrame window = new JFrame("Map Events Application");
         window.setBounds(100, 100, 1000, 700);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -403,31 +489,59 @@ public abstract class General_GUI {
         //final map
         JMap jMap = new JMap();
 
-        //Layer lists
-        layersList = jMap.getLayers();
-
-        //Base map
-        final ArcGISTiledMapServiceLayer baseLayer = new ArcGISTiledMapServiceLayer(URL_WORLD_BASEMAP);
-        layersList.add(baseLayer);
-
         //Extention
         jMap.setExtent(new Envelope(-11257768.21, 2127705.43, -10840965.29, 2343124.81));
 
-        //Dinamic Layer: Digital Elevation Model
+        //Layer lists
+        layersList = jMap.getLayers();
+
+        //Base map Layer: 0
+        final ArcGISTiledMapServiceLayer baseLayer = new ArcGISTiledMapServiceLayer(URL_WORLD_BASEMAP);
+        layersList.add(baseLayer);
+
+        //Dinamic Layer(Digital Elevation Model) : 1
         String path = this.currentPath + "\\build\\classes\\Archivos\\Mapas\\mapa.mpk";
         dynamicLayer = new ArcGISLocalDynamicMapServiceLayer(path);
         dynamicLayer.setOpacity(0.5f);
         layersList.add(dynamicLayer);
 
+        //Graphics Layer : 2
+        this.graphicsLayer = new GraphicsLayer();
+        layersList.add(this.graphicsLayer);
+
+        //Graphic Layer Airships: 3
+        this.graphicsLayerAirship = new GraphicsLayer();
+        layersList.add(this.graphicsLayerAirship);
+
         jMap.getGrid().setType(Grid.GridType.MGRS);
 
         // listen to mouse events for drawing the interesting point. 
-        jMap.addMapOverlay(new MouseClickedOverlay(contentPane));
+        jMap.addMapOverlay(new MouseClickedOverlay(this));
         return jMap;
     }
 
     public InformationAirship getControlPanel() {
         return panelInformation;
-    }   
-    
+    }
+
+    public JComponent getContentPane() {
+        return contentPane;
+    }
+
+    public void setContentPane(JComponent contentPane) {
+        this.contentPane = contentPane;
+    }
+
+    public List<PuntoInteres> getPuntosInteres() {
+        return puntosInteres;
+    }
+
+    public GPSLayer getGpsLayer() {
+        return gpsLayer;
+    }
+
+    public JMap getMap() {
+        return map;
+    }
+
 }

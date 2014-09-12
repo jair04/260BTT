@@ -5,43 +5,55 @@
  */
 package SIG_ArcGIS;
 
-import GUI.PanelAddPoint;
+import GUI.General_GUI;
+import GUI.AddPointFrame;
+import com.esri.core.geometry.Point;
 import com.esri.map.MapOverlay;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JToolTip;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author Jair
  */
-public class MouseClickedOverlay extends MapOverlay {
+public class MouseClickedOverlay extends MapOverlay{
 
-    private JComponent contentPane;
+    private final JComponent contentPane;
+    General_GUI general_GUI;
+    AddPointFrame addpoint;
+    int x;
+    int y;
 
-    public MouseClickedOverlay(JComponent contentPane) {
-        
-        this.contentPane = contentPane;
-        
+    public MouseClickedOverlay(General_GUI general) {
+        this.general_GUI = general;
+        this.contentPane = general.getContentPane();
+
     }
 
     @Override
     public void onMouseClicked(MouseEvent event) {
+        if (SwingUtilities.isRightMouseButton(event)) {
+            this.x = event.getX();
+            this.y = event.getY();
 
-        JPanel submenu = new PanelAddPoint(event.getX()-53, event.getY()-53);
-        contentPane.add(submenu);
-        System.out.println(event.getX() + "," + event.getY());
-        
+            if(addpoint != null){addpoint.setVisible(false);}            
+            
+            Point mapPoint = this.getMap().toMapPoint(this.x, this.y);
+           
+           //hjgjhg 
+            
+            addpoint = new AddPointFrame(this.x, this.y, this.general_GUI,mapPoint);
+            addpoint.setVisible(true);           
+            
+        }else{
+            if(addpoint != null){
+                addpoint.setVisible(false);
+            }
+        }
+
     }
-
-
-    
-    
-    
-    
 
 }

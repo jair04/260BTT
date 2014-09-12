@@ -88,6 +88,11 @@ public class Posicion implements Serializable{
     public void setAltura(String altura) {
         this.altura = altura;
     }
+
+    @Override
+    public String toString() {
+        return "Posicion{" + "latitud=" + latitud + ", longitud=" + longitud + '}';
+    }
     
     
 }

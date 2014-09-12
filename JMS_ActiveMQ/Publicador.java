@@ -12,12 +12,11 @@ package JMS_ActiveMQ;
 import Controller.Constante;
 import DAO.Aeronave;
 import DAO.Mensaje;
-import java.io.BufferedReader;
+import GUI.General_GUI;
+import com.esri.core.geometry.Point;
+import java.awt.Color;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,24 +36,30 @@ import org.apache.activemq.broker.BrokerService;
 
 public class Publicador implements MessageListener {
 
-    private final ActiveMQConnectionFactory connectionFactory;
-    private final Connection connection;
-    private final Session session;
-    private final Destination destination;
-    private final MessageProducer producer;
-    private final MessageProducer replyProducer;
+    private ActiveMQConnectionFactory connectionFactory;
+    private Connection connection;
+    private Session session;
+    private Destination destination;
+    private MessageProducer producer;
+    private MessageProducer replyProducer;
     private final String ip;
     HashMap<String, Aeronave> mision = new HashMap<>();
-    
+    private final General_GUI general;
+    private  Color[] color = {Color.GREEN,Color.YELLOW,Color.orange}; 
+    private int i=0;
 
     /*
      ip: ip donde se esta ejecutando la aplicacion del comando central
      */
-    public Publicador(String ip) throws JMSException, IOException, Exception {
-
-        //Server ip
-        this.ip = "tcp://" + ip + ":61616";
-
+    public Publicador(General_GUI general){
+        this.general = general;
+        this.ip = "tcp://0.0.0.0:61616";
+        
+        Aeronave comando = new Aeronave("comando", null, null);
+        mision.put("comando", comando);
+    }
+    
+    public void startServer() throws Exception{
         //Embebbed message broker
         BrokerService broker = new BrokerService();
         broker.setPersistent(false);
@@ -87,7 +92,6 @@ public class Publicador implements MessageListener {
         Destination destinationAux = this.session.createQueue(Constante.NOMBRE_COLA);
         MessageConsumer consumer = this.session.createConsumer(destinationAux);
         consumer.setMessageListener(this);
-
     }
 
     public void enviarMensaje(final Serializable mensaje) throws JMSException, InterruptedException {
@@ -118,9 +122,7 @@ public class Publicador implements MessageListener {
             //processing the petition 
             this.procesarPeticion(objeto, msg);
 
-        } catch (JMSException ex) {
-            Logger.getLogger(Publicador.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
+        } catch (JMSException | InterruptedException ex) {
             Logger.getLogger(Publicador.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -139,7 +141,9 @@ public class Publicador implements MessageListener {
                 if(opc == 0){
                     //adding the ariship to the mission
                     resultOpc = true;
+                    mensaje.getAeronave().setColor(color[i]);
                     mision.put(mensaje.getAeronave().getMatricula(), mensaje.getAeronave());
+                    i++;
                 }
                 
                 //True if the command has acepted the petition, otherwise false
@@ -154,18 +158,25 @@ public class Publicador implements MessageListener {
                 System.out.println("Peticion conectarAeronave  [" + mensaje.getAeronave().getMatricula() + "] al comando central");
                 
             } else if (mensaje.getTipo() == Constante.ACTUALIZAR_AERONAVE) {
-                   System.out.println(      mensaje.getAeronave().getMatricula()+","
+                   /*System.out.println(      mensaje.getAeronave().getMatricula()+","
                                           + mensaje.getAeronave().getPosicion().getLatitud()+","
                                           + mensaje.getAeronave().getPosicion().getLongitud()+","
-                                          + this.mision.size()
+                                          + mensaje.getAeronave().getPosicion().getAltitud()+","
+                                          + mensaje.getAeronave().getPosicion().getAltura()+","
+                                          + mensaje.getAeronave().getPosicion().getMgrs()+","
+                                          + mensaje.getAeronave().getPosicion().getVelocidad()+","
+                                          + mensaje.getAeronave().getPuntosInteres()
                            
-                   );
-                   
-                   //searching the aership and then updating its position
+                   );*/
+                                
+                   //searching the airship and then updating its position
                    this.mision.get(mensaje.getAeronave().getMatricula()).setPosicion(mensaje.getAeronave().getPosicion());
+                   this.mision.get(mensaje.getAeronave().getMatricula()).setPuntosInteres(mensaje.getAeronave().getPuntosInteres());
                    
                    Mensaje misionUpdated = new Mensaje(Constante.MISION_ACTUALIZADA, null);
                    misionUpdated.setMision(this.mision);
+                   
+                   this.general.paintMissionLayer("comando", this.mision);                   
                    this.enviarMensaje(misionUpdated);
             }
         } catch (JMSException ex) {

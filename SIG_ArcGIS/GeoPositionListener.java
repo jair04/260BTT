@@ -9,6 +9,7 @@ import Controller.Constante;
 import DAO.Aeronave;
 import DAO.Mensaje;
 import DAO.Posicion;
+import GUI.Aeronave_GUI;
 import GUI.General_GUI;
 import GUI.InformationAirship;
 import JMS_ActiveMQ.Consumidor;
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.jms.JMSException;
+import javax.swing.JPanel;
 
 /**
  *
@@ -45,13 +47,19 @@ public class GeoPositionListener implements GPSEventListener {
     JMap jMap;
     GraphicsLayer gpsLayer;
     General_GUI generalGUI;
-    Consumidor consumidor;
+    Aeronave_GUI aeronaveGUI;
 
-    public GeoPositionListener(JMap jMap, GraphicsLayer gpsLayer, General_GUI generalGUI, Consumidor consumidor) {
-        this.jMap = jMap;
-        this.gpsLayer = gpsLayer;
+    Consumidor consumidor;
+    JMap map;
+
+    public GeoPositionListener(General_GUI generalGUI) {
+
         this.generalGUI = generalGUI;
-        this.consumidor = consumidor;
+        this.aeronaveGUI = (Aeronave_GUI) generalGUI;
+
+        this.jMap = generalGUI.getMap();
+        this.gpsLayer = generalGUI.getGpsLayer();
+        this.consumidor = aeronaveGUI.getConsumidor();
     }
 
     @Override
@@ -75,15 +83,15 @@ public class GeoPositionListener implements GPSEventListener {
         if (newPosition != null) {
             // Changing reference to mapPoint
             Point point = new Point(newPosition.getLocation().getLongitude(), newPosition.getLocation().getLatitude());
-            Point mapPoint = (Point) GeometryEngine.project(point, SpatialReference.create(4326), jMap.getSpatialReference());
-
+            Point mapPoint = (Point) GeometryEngine.project(point, SpatialReference.create(4326), jMap.getSpatialReference());          
+            
             //getting the panel from the General_GUI where is showing the updated information
             InformationAirship info = generalGUI.getControlPanel();
-            
+
             String mgrs = CoordinateConversion.pointToMgrs(mapPoint, jMap.getSpatialReference(), CoordinateConversion.MGRSConversionMode.AUTO, 3, true, true);
             String altura = getPixelElevationValue(mapPoint);
-            String altitud = newPosition.getLocation().getAltitude()+"";
-            String longitud =  decimal.format(newPosition.getLocation().getLongitude());
+            String altitud = newPosition.getLocation().getAltitude() + "";
+            String longitud = decimal.format(newPosition.getLocation().getLongitude());
             String latitud = decimal.format(newPosition.getLocation().getLatitude());
             String velocidad = decimal.format(newPosition.getLocation().getSpeed());
 
@@ -91,7 +99,7 @@ public class GeoPositionListener implements GPSEventListener {
             info.getMgrsLabel().setText("MGRS: " + mgrs + "         ");
             info.getAlturaLabel().setText("Altura: " + altura + " mts.");
             info.getAltitudLabel().setText("Altitud: " + altitud + " mts.");
-            info.getLongitudLabel().setText("Longitud: " +longitud);
+            info.getLongitudLabel().setText("Longitud: " + longitud);
             info.getLatitudLabel().setText("Latitud: " + latitud);
             info.getVelocidadLabel().setText("Velocidad: " + velocidad + " m/s");
             info.getElevacion().setText(decimalE.format(newPosition.getLocation().getAltitude() - Double.parseDouble(getPixelElevationValue(mapPoint))) + " mts.");
@@ -103,6 +111,8 @@ public class GeoPositionListener implements GPSEventListener {
                 try {
                     aeronaveUpdated.readFileInformation();
                     aeronaveUpdated.setPosicion(updatedPosition);
+                    aeronaveUpdated.setPuntosInteres(generalGUI.getPuntosInteres());
+
                     Mensaje updateData = new Mensaje(Constante.ACTUALIZAR_AERONAVE, aeronaveUpdated);
                     this.consumidor.sendMessage(updateData);
                 } catch (IOException | JMSException | InterruptedException ex) {
@@ -111,11 +121,15 @@ public class GeoPositionListener implements GPSEventListener {
 
             }
 
+            //35.6334, N, 60.2343
+            //Point point1 = new Point(Double.valueOf("-1.1095135740084985E7"),Double.valueOf("2251281.703229462"));
+            //this.generalGUI.addGriphicPoint(point1, Color.YELLOW, "C");
+
             //setting a dalay to allows the jpanel update correctly the information
             info.setVisible(false);
             try {
                 info.setVisible(false);
-                Thread.sleep(1);
+                Thread.sleep(0);
                 info.setVisible(true);
             } catch (InterruptedException ex) {
                 Logger.getLogger(GeoPositionListener.class.getName()).log(Level.SEVERE, null, ex);

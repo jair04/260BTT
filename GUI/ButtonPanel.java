@@ -6,10 +6,13 @@
 package GUI;
 
 import JMS_ActiveMQ.Consumidor;
+import JMS_ActiveMQ.Publicador;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.jms.JMSException;
@@ -32,6 +35,7 @@ public class ButtonPanel extends JPanel {
     private final JScrollPane submenu;
     private final String image;
     Consumidor consumidor;
+    Publicador publicador;
 
     public ButtonPanel(final String image, int x, int y, JScrollPane submenu) throws IOException {
         this.image = image;
@@ -69,7 +73,11 @@ public class ButtonPanel extends JPanel {
                     } catch (JMSException ex) {
                         JOptionPane.showMessageDialog(null, "No se encontro el servidor", "Error", JOptionPane.ERROR_MESSAGE);
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(ButtonPanel.class.getName()).log(Level.SEVERE, null, ex);
+                        System.out.println("1");
+                    } catch (UnknownHostException ex) {
+                        System.out.println("2");
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Servidor en uso", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -86,7 +94,7 @@ public class ButtonPanel extends JPanel {
         this.add(imageLabel);
     }
 
-    public void showSubmenu() throws JMSException, InterruptedException {
+    public void showSubmenu() throws JMSException, InterruptedException, UnknownHostException, Exception {
         if (this.image.equals("conectServer")) {
             String[] options = {"Conectar","Cancelar"};
             JPanel panel = new JPanel();
@@ -101,16 +109,17 @@ public class ButtonPanel extends JPanel {
                 this.consumidor.startConnection();     
                 this.consumidor.sendConnectionRequest();
             }
-        } else {
+        } else if(this.image.equals("server")){
+            this.publicador.startServer();
+            JOptionPane.showMessageDialog(null, "Servidor INICIADO: ");
+        }else{
             submenu.setVisible(true);
         }
 
     }
 
-    public void hideSubmenu() {
-        if (this.image.equals("conectServer")) {
-
-        } else {
+    public void hideSubmenu() {        
+        if(submenu != null){
             submenu.setVisible(false);
         }
     }
@@ -122,6 +131,11 @@ public class ButtonPanel extends JPanel {
     public void setConsumidor(Consumidor consumidor) {
         this.consumidor = consumidor;
     }
+
+    public void setPublicador(Publicador publicador) {
+        this.publicador = publicador;
+    }
+    
     
     
 

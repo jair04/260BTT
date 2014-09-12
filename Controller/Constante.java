@@ -25,4 +25,6 @@ public interface Constante {
      final String NOMBRE_COLA = "FAM_MISION_COLA";
      final int RESPUESTA_PETICION_CONEXION = 6;
      final int MISION_ACTUALIZADA=7;
+     final int AERONAVE=8;
+     final int COMANDO=9;
 }

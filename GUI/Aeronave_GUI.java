@@ -6,30 +6,28 @@
 package GUI;
 
 import DAO.Aeronave;
+import DAO.PuntoInteres;
 import JMS_ActiveMQ.Consumidor;
 import SIG_ArcGIS.GeoPositionListener;
 import com.esri.core.gps.BaudRate;
+import com.esri.core.gps.FileGPSWatcher;
 import com.esri.core.gps.GPSException;
+import com.esri.core.gps.IGPSWatcher;
 import com.esri.core.gps.Parity;
 import com.esri.core.gps.SerialPortGPSWatcher;
 import com.esri.core.gps.SerialPortInfo;
 import com.esri.core.gps.StopBits;
 import com.esri.map.GPSLayer;
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
@@ -43,12 +41,13 @@ public class Aeronave_GUI extends General_GUI {
     private final JScrollPane subGPS;
     private final String offset = "                                                            ";
     private SerialPortGPSWatcher gpsWatcher;
-    private Consumidor consumidor;
+    private final Consumidor consumidor;
 
     public Aeronave_GUI() throws Exception {
         //Filling airchip general information 
         Aeronave aeronave = new Aeronave();
-        aeronave.readFileInformation();        
+        aeronave.readFileInformation();
+        
         this.consumidor = new Consumidor("", aeronave);
         
         //GPS submenu
@@ -121,14 +120,20 @@ public class Aeronave_GUI extends General_GUI {
     protected void startGPS(String COMport) {
         //GPS layer
         try {
-            SerialPortInfo myPortInfo = new SerialPortInfo("COM7", BaudRate.BAUD_9600, Parity.NONE, StopBits.ONE, 8);
-            GeoPositionListener myGeo = new GeoPositionListener(map, super.gpsLayer, this, this.consumidor);
-
-            gpsWatcher = new SerialPortGPSWatcher(myPortInfo, myGeo);
-            super.gpsLayer = new GPSLayer(gpsWatcher);
+            GeoPositionListener myGeo = new GeoPositionListener(this);
             
+            //SerialPortInfo myPortInfo = new SerialPortInfo("COM7", BaudRate.BAUD_9600, Parity.NONE, StopBits.ONE, 8);          
+            //gpsWatcher = new SerialPortGPSWatcher(myPortInfo, myGeo);
+  
+             String path = new java.io.File(".").getCanonicalPath()+"\\build\\classes\\Archivos\\GPS\\GPSReader.txt";
+            IGPSWatcher gpsWatcherFile = new FileGPSWatcher(path, 500, true, myGeo);
+            
+           
+            
+            super.gpsLayer = new GPSLayer(gpsWatcherFile);
             super.gpsLayer.setMode(GPSLayer.Mode.NAVIGATION);
             super.gpsLayer.setNavigationPointHeightFactor(0.5);
+            
             super.layersList.add(super.gpsLayer);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "GPS no conectado");
@@ -164,4 +169,10 @@ public class Aeronave_GUI extends General_GUI {
         });
     }
 
+    public Consumidor getConsumidor() {
+        return consumidor;
+    }
+
+    
+    
 }

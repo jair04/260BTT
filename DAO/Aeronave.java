@@ -10,6 +10,7 @@ import com.esri.core.gps.FileGPSWatcher;
 import com.esri.core.gps.GPSEventListener;
 import com.esri.core.gps.GPSException;
 import com.esri.core.gps.IGPSWatcher;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -35,6 +36,8 @@ public class Aeronave implements Serializable {
 
     /*Almacena informacioni geografica de una aeronave en un punto especifivo*/
     private Posicion posicion;
+    
+    private Color color;
 
     /*Puntos de interes que han sido agregador*/
     List<PuntoInteres> puntosInteres;
@@ -81,6 +84,20 @@ public class Aeronave implements Serializable {
     public List<PuntoInteres> getPuntosInteres() {
         return this.puntosInteres;
     }
+
+    public void setPuntosInteres(List<PuntoInteres> puntosInteres) {
+        this.puntosInteres = puntosInteres;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+    
+    
 
     @Override
     public String toString() {
