@@ -28,10 +28,6 @@ public class InformationAirship extends javax.swing.JPanel {
         
         Font estilo = new Font(aeronave.getFont().getName(), aeronave.getFont().getStyle(), 12);
         
-        jPanel1.setBackground(new Color(0, 0, 0, 0));
-        jPanel4.setBackground(new Color(0, 0, 0, 0));
-        elevacion.setBackground(new Color(0, 0, 0, 0));
-        
         mgrsLabel.setFont(estilo);
         altitudLabel.setFont(estilo);
         alturaLabel.setFont(estilo);
@@ -88,24 +84,32 @@ public class InformationAirship extends javax.swing.JPanel {
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
+        setBackground(new java.awt.Color(51, 51, 51));
+
         aeronave.setText("jTextField1");
 
+        jPanel4.setBackground(new java.awt.Color(51, 51, 51));
         jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.LINE_AXIS));
 
+        jPanel1.setBackground(new java.awt.Color(51, 51, 51));
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.Y_AXIS));
 
+        latitudLabel.setBackground(new java.awt.Color(102, 102, 102));
         latitudLabel.setForeground(new java.awt.Color(255, 255, 255));
         latitudLabel.setText("Latitud: NaN");
         jPanel1.add(latitudLabel);
 
+        longitudLabel.setBackground(new java.awt.Color(102, 102, 102));
         longitudLabel.setForeground(new java.awt.Color(255, 255, 255));
         longitudLabel.setText("Longitud: NaN");
         jPanel1.add(longitudLabel);
 
+        mgrsLabel.setBackground(new java.awt.Color(102, 102, 102));
         mgrsLabel.setForeground(new java.awt.Color(255, 255, 255));
         mgrsLabel.setText("MGRS: NaN                         ");
         jPanel1.add(mgrsLabel);
 
+        altitudLabel.setBackground(new java.awt.Color(102, 102, 102));
         altitudLabel.setForeground(new java.awt.Color(255, 255, 255));
         altitudLabel.setText("Altitud: NaN");
         jPanel1.add(altitudLabel);
@@ -213,9 +217,9 @@ public class InformationAirship extends javax.swing.JPanel {
         velocidadLabel.setText(string);
     }
 
-    
-    
-    
+    public void setTextTextField(String string){
+        aeronave.setText("Aeronave: "+string);
+    }  
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

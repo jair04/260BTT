@@ -6,6 +6,7 @@
 
 package DAO;
 
+import java.awt.Color;
 import java.io.Serializable;
 
 /**
@@ -22,6 +23,8 @@ public class PuntoInteres implements Serializable{
     
     //asignado por el comando o la aeronave
     private int asignacion; 
+    
+    private Color color;
     
     public PuntoInteres() {
     }
@@ -55,6 +58,16 @@ public class PuntoInteres implements Serializable{
     public void setAsignacion(int asignacion) {
         this.asignacion = asignacion;
     }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+    
+    
 
     @Override
     public String toString() {

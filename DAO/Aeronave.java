@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.jms.JMSException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -41,6 +42,8 @@ public class Aeronave implements Serializable {
 
     /*Puntos de interes que han sido agregador*/
     List<PuntoInteres> puntosInteres;
+    
+    private int counter;
 
     public Aeronave() {
         this.puntosInteres = new ArrayList<>();
@@ -95,6 +98,14 @@ public class Aeronave implements Serializable {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public int getCounter() {
+        return counter;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
     }
     
     
@@ -155,7 +166,6 @@ public class Aeronave implements Serializable {
         //current directory
         final String currentPath = new java.io.File(".").getCanonicalPath();
         
-
         try (BufferedReader br = new BufferedReader(new FileReader(currentPath + "\\build\\classes\\Archivos\\Datos\\informacionPersonal.txt"))) {
 
             Piloto pilotoAux = new Piloto();
@@ -179,6 +189,9 @@ public class Aeronave implements Serializable {
             
             line = br.readLine();
             this.setMatricula(line);
+            
+            line = br.readLine();
+            this.setCounter(Integer.parseInt(line));
             
             this.setPiloto(pilotoAux);           
         }

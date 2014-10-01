@@ -5,18 +5,14 @@
  */
 package GUI;
 
+import Controller.Constante;
 import DAO.Aeronave;
-import DAO.PuntoInteres;
 import JMS_ActiveMQ.Consumidor;
 import SIG_ArcGIS.GeoPositionListener;
-import com.esri.core.gps.BaudRate;
 import com.esri.core.gps.FileGPSWatcher;
 import com.esri.core.gps.GPSException;
 import com.esri.core.gps.IGPSWatcher;
-import com.esri.core.gps.Parity;
 import com.esri.core.gps.SerialPortGPSWatcher;
-import com.esri.core.gps.SerialPortInfo;
-import com.esri.core.gps.StopBits;
 import com.esri.map.GPSLayer;
 import java.awt.event.MouseAdapter;
 import java.io.IOException;
@@ -48,7 +44,11 @@ public class Aeronave_GUI extends General_GUI {
         Aeronave aeronave = new Aeronave();
         aeronave.readFileInformation();
         
-        this.consumidor = new Consumidor("", aeronave);
+        super.setTypeUser(Constante.AERONAVE);
+        super.getControlPanel().setTextTextField(aeronave.getMatricula());
+        
+        
+        this.consumidor = new Consumidor("", aeronave, this);
         
         //GPS submenu
         subGPS = this.getGPS_PanelSubmenu();
@@ -62,7 +62,9 @@ public class Aeronave_GUI extends General_GUI {
 
         
         try {
-            gpsPanel = new ButtonPanel("gpsOff", 100, 145, subGPS);
+            //ButtonPanel documents = new ButtonPanel("map", 10, 595, null);
+            //gpsPanel = new ButtonPanel("gpsOff", 100, 145, subGPS);
+            gpsPanel = new ButtonPanel("gpsOff", 10, 595, subGPS);
             
             //Here we send the consumer, then inside we sent the ip and establish the comunication 
             conectServer = new ButtonPanel("conectServer", 10, 145, null);
@@ -113,7 +115,8 @@ public class Aeronave_GUI extends General_GUI {
         components.add(navegacion);
         components.add(estado);
         
-        return new ScrollPanel(super.createSubmenu_panel(components, true), 185, 145);
+        
+        return new ScrollPanel(super.createSubmenu_panel(components, true), 95, 595);
     }
 
     //starting to read the NMEA senteces which were received from the serial port 
@@ -149,25 +152,7 @@ public class Aeronave_GUI extends General_GUI {
         }
     }  
 
-    public static void main(String args[]) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // instance of this application
-                    Aeronave_GUI aeronave = new Aeronave_GUI();
-
-                    // create the UI, including the map, for the application.
-                    JFrame appWindow = aeronave.createWindow();
-                    appWindow.add(aeronave.createUI());
-                    appWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                    appWindow.setVisible(true);
-                } catch (Exception e) {
-                    System.out.println(e.toString());
-                }
-            }
-        });
-    }
+    
 
     public Consumidor getConsumidor() {
         return consumidor;

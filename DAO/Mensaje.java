@@ -6,6 +6,8 @@
 
 package DAO;
 
+import com.esri.core.geometry.Point;
+import java.awt.Color;
 import java.io.Serializable;
 import java.util.HashMap;
 
@@ -26,6 +28,10 @@ public class Mensaje implements Serializable{
     
     //this variable is used when the airship receive the the reply result about the connection to the central command
     private boolean peticionAceptada;
+    
+    private Point point_Interes;
+    private Color point_color;
+    private String point_conter; 
     
     //variable to send the mision´s updated information to the airship 
     private HashMap<String,Aeronave> mision = new HashMap<>();
@@ -90,5 +96,31 @@ public class Mensaje implements Serializable{
     public void addAeronaveMision(Aeronave aeronave){
         this.mision.put(aeronave.getMatricula(), aeronave);
     }
+
+    public Point getPoint_Interes() {
+        return point_Interes;
+    }
+
+    public void setPoint_Interes(Point point_Interes) {
+        this.point_Interes = point_Interes;
+    }
+
+    public Color getPoint_color() {
+        return point_color;
+    }
+
+    public void setPoint_color(Color point_color) {
+        this.point_color = point_color;
+    }
+
+    public String getPoint_conter() {
+        return point_conter;
+    }
+
+    public void setPoint_conter(String point_conter) {
+        this.point_conter = point_conter;
+    }
+    
+    
     
 }

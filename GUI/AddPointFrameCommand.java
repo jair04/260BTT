@@ -5,40 +5,43 @@
  */
 package GUI;
 
+import Controller.Constante;
+import DAO.Mensaje;
 import com.esri.core.geometry.Point;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.jms.JMSException;
 
 /**
  *
  * @author Jair
  */
-public class AddPointFrame extends javax.swing.JFrame {
+public class AddPointFrameCommand extends javax.swing.JFrame {
 
     /**
      * Creates new form addPointFrame
      */
     private final int xPoint;
     private final int yPoint;
-    private General_GUI general;
-    private Point point;
+    private final General_GUI general;
+    private final Point point;
     private static int counter=0;
+    private UsuariosFrame frame;
 
-    public AddPointFrame(int x, int y, General_GUI general, Point point) {
+    public AddPointFrameCommand(int x, int y, General_GUI general, Point point) {
         this.xPoint = x;
         this.yPoint = y;
         this.general = general;
         this.point = point;
 
         this.setUndecorated(true);
-        this.setPreferredSize(new Dimension(156, 92));
+        this.setPreferredSize(new Dimension(156, 132));
         this.setLocation(this.xPoint + 15, this.yPoint + 5);
 
         initComponents();
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -49,12 +52,17 @@ public class AddPointFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel4 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.Y_AXIS));
 
         jPanel2.setBackground(new java.awt.Color(102, 102, 102));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
@@ -91,6 +99,8 @@ public class AddPointFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jPanel4.add(jPanel2);
+
         jPanel1.setBackground(new java.awt.Color(102, 102, 102));
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
@@ -103,8 +113,8 @@ public class AddPointFrame extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Archivos/Imagenes/cancela.png"))); // NOI18N
-        jLabel1.setText(" Cancelar");
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Archivos/Imagenes/usuario.png"))); // NOI18N
+        jLabel1.setText(" Asignar Punto");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -112,29 +122,60 @@ public class AddPointFrame extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel1)
-                .addGap(0, 67, Short.MAX_VALUE))
+                .addGap(0, 28, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel4.add(jPanel1);
+
+        jPanel3.setBackground(new java.awt.Color(102, 102, 102));
+        jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        jPanel3.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel3.setPreferredSize(new java.awt.Dimension(156, 43));
+        jPanel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPanel3MouseClicked(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Archivos/Imagenes/cancela.png"))); // NOI18N
+        jLabel2.setText(" Cancelar");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jLabel2)
+                .addGap(0, 67, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
                 .addContainerGap(13, Short.MAX_VALUE))
         );
+
+        jPanel4.add(jPanel3);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -147,25 +188,52 @@ public class AddPointFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jPanel2MouseEntered
 
     private void jPanel2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseExited
-        //jPanel2.setBackground(new java.awt.Color(102, 0, 0));
+
     }//GEN-LAST:event_jPanel2MouseExited
 
     //Pressed mouse: marcarPunto
     private void jPanel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseClicked
-        this.general.addGriphicPoint(point,Color.BLUE,counter+"");
+        this.general.addGraphicPointCommand(point,Color.BLUE,""+counter);
         this.setVisible(false);
         counter++;
+        
+        Mensaje mensaje = new Mensaje(Constante.NUEVO_P_INTERES, null);
+        mensaje.setPoint_Interes(point);
+        mensaje.setPoint_color(Color.pink);
+        mensaje.setPoint_conter("C"+counter);
+        
+        
+        try {
+            this.general.getPublicador().enviarMensaje(mensaje);
+        } catch (JMSException | InterruptedException ex) {
+            System.out.println("servidor no iniciado");
+        }
+        
     }//GEN-LAST:event_jPanel2MouseClicked
 
     //Pressed mouse: cancelar
     private void jPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseClicked
-        this.setVisible(false);
+        frame = new UsuariosFrame(this.xPoint, this.yPoint, this.general,this.point,this);
+        //frame.setFrame(this);
+        frame.setVisible(true);
     }//GEN-LAST:event_jPanel1MouseClicked
 
+    private void jPanel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel3MouseClicked
+        this.setVisible(false);
+        if(frame!= null){
+            frame.setVisible(false);
+        }
+    }//GEN-LAST:event_jPanel3MouseClicked
+
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     // End of variables declaration//GEN-END:variables
 }

@@ -168,6 +168,7 @@ public class Cifrado
     }
     
     //Test
+    /*
     public static void main(String args[])
     {
         try
@@ -186,6 +187,6 @@ public class Cifrado
         {
             e.printStackTrace();
         }
-    }
+    }*/
 }
 

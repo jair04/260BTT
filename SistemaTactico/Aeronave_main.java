@@ -3,23 +3,50 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package SistemaTactico;
 
-import Controller.Constante;
 import DAO.Aeronave;
-import DAO.Piloto;
-import JMS_ActiveMQ.Consumidor;
-import javax.jms.JMSException;
+import GUI.Aeronave_GUI;
+import GUI.UserInformation;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author Jair
  */
 public class Aeronave_main {
-    public static void main(String args[]) throws JMSException{
-        /*Piloto piloto = new Piloto("2011630248","Edson Jair","Roa","Reyes",21);
-        Aeronave aeronave = new Aeronave("189.245.241.120","189.245.241.120","A1Z201", piloto);
-        aeronave.realizarConexion();*/
+
+    public static void main(String args[]) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Aeronave aeronaveDAO = new Aeronave();
+                    aeronaveDAO.readFileInformation();
+
+                    if (aeronaveDAO.getCounter() == 0) {
+                        UserInformation uInformation = new UserInformation();
+                        uInformation.setVisible(true);
+                    } else {
+                        // instance of this application
+                        Aeronave_GUI aeronave = new Aeronave_GUI();
+
+                        // create the UI, including the map, for the application.
+                        JFrame appWindow = aeronave.createWindow();
+                        appWindow.add(aeronave.createUI());
+                        appWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                        appWindow.setVisible(true);
+                    }
+
+                } catch (Exception e) {
+                    System.out.println(e.toString());
+                }
+            }
+        });
+        
+        //System.out.println(getClass().getClassLoader().getResource(".").getPath());
     }
+        
+    
 }

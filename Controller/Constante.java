@@ -27,4 +27,6 @@ public interface Constante {
      final int MISION_ACTUALIZADA=7;
      final int AERONAVE=8;
      final int COMANDO=9;
+     final int NUEVO_P_INTERES=10;
+     final int ASIGNAR_PUNTO=11;
 }

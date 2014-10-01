@@ -12,11 +12,15 @@ package JMS_ActiveMQ;
 import Controller.Constante;
 import DAO.Aeronave;
 import DAO.Mensaje;
+import GUI.ButtonPanel;
 import GUI.General_GUI;
+import GUI.InformationAirship;
+import com.esri.core.geometry.CoordinateConversion;
 import com.esri.core.geometry.Point;
 import java.awt.Color;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,6 +35,7 @@ import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 
@@ -45,21 +50,21 @@ public class Publicador implements MessageListener {
     private final String ip;
     HashMap<String, Aeronave> mision = new HashMap<>();
     private final General_GUI general;
-    private  Color[] color = {Color.GREEN,Color.YELLOW,Color.orange}; 
-    private int i=0;
+    private final Color[] color = {Color.RED,Color.YELLOW,Color.MAGENTA, Color.GREEN,Color.ORANGE, Color.LIGHT_GRAY};
+    private int i = 0;
 
     /*
      ip: ip donde se esta ejecutando la aplicacion del comando central
      */
-    public Publicador(General_GUI general){
+    public Publicador(General_GUI general) {
         this.general = general;
         this.ip = "tcp://0.0.0.0:61616";
-        
+
         Aeronave comando = new Aeronave("comando", null, null);
         mision.put("comando", comando);
     }
-    
-    public void startServer() throws Exception{
+
+    public void startServer() throws Exception {
         //Embebbed message broker
         BrokerService broker = new BrokerService();
         broker.setPersistent(false);
@@ -122,63 +127,78 @@ public class Publicador implements MessageListener {
             //processing the petition 
             this.procesarPeticion(objeto, msg);
 
-        } catch (JMSException | InterruptedException ex) {
+        } catch (JMSException | InterruptedException | IOException ex) {
             Logger.getLogger(Publicador.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void procesarPeticion(Mensaje mensaje, Message msg) throws InterruptedException {
+    private void procesarPeticion(Mensaje mensaje, Message msg) throws InterruptedException, IOException {
         try {
             if (mensaje.getTipo() == Constante.CONECTAR_AERONAVE) {
                 //reply of the request
                 Mensaje respuestaPeticion = new Mensaje(Constante.RESPUESTA_PETICION_CONEXION, null);
-                                
+
                 //showing message 
                 int opc = JOptionPane.showConfirmDialog(null, "¿Aceptar aeronave no. " + mensaje.getAeronave().getMatricula() + " ?");
                 boolean resultOpc = false;
-                
+
                 //0 when the petition has been acepted 
-                if(opc == 0){
+                if (opc == 0) {
                     //adding the ariship to the mission
                     resultOpc = true;
                     mensaje.getAeronave().setColor(color[i]);
                     mision.put(mensaje.getAeronave().getMatricula(), mensaje.getAeronave());
+
+                    this.general.updateUsersPanel(mision);
                     i++;
                 }
-                
+
                 //True if the command has acepted the petition, otherwise false
                 respuestaPeticion.setPeticionAceptada(resultOpc);
-                
+
                 //Sending the response´s request to the airship                 
                 ObjectMessage response = this.session.createObjectMessage();
                 response.setObject(respuestaPeticion);
-                response.setJMSCorrelationID(msg.getJMSCorrelationID());                
+                response.setJMSCorrelationID(msg.getJMSCorrelationID());
                 this.replyProducer.send(msg.getJMSReplyTo(), response);
 
                 System.out.println("Peticion conectarAeronave  [" + mensaje.getAeronave().getMatricula() + "] al comando central");
-                
+
             } else if (mensaje.getTipo() == Constante.ACTUALIZAR_AERONAVE) {
-                   /*System.out.println(      mensaje.getAeronave().getMatricula()+","
-                                          + mensaje.getAeronave().getPosicion().getLatitud()+","
-                                          + mensaje.getAeronave().getPosicion().getLongitud()+","
-                                          + mensaje.getAeronave().getPosicion().getAltitud()+","
-                                          + mensaje.getAeronave().getPosicion().getAltura()+","
-                                          + mensaje.getAeronave().getPosicion().getMgrs()+","
-                                          + mensaje.getAeronave().getPosicion().getVelocidad()+","
-                                          + mensaje.getAeronave().getPuntosInteres()
-                           
-                   );*/
-                                
-                   //searching the airship and then updating its position
-                   this.mision.get(mensaje.getAeronave().getMatricula()).setPosicion(mensaje.getAeronave().getPosicion());
-                   this.mision.get(mensaje.getAeronave().getMatricula()).setPuntosInteres(mensaje.getAeronave().getPuntosInteres());
-                   
-                   Mensaje misionUpdated = new Mensaje(Constante.MISION_ACTUALIZADA, null);
-                   misionUpdated.setMision(this.mision);
-                   
-                   this.general.paintMissionLayer("comando", this.mision);                   
-                   this.enviarMensaje(misionUpdated);
+
+                //searching the airship and then updating its position
+                this.mision.get(mensaje.getAeronave().getMatricula()).setPosicion(mensaje.getAeronave().getPosicion());
+                this.mision.get(mensaje.getAeronave().getMatricula()).setPuntosInteres(mensaje.getAeronave().getPuntosInteres());
+
+                Mensaje misionUpdated = new Mensaje(Constante.MISION_ACTUALIZADA, null);
+                misionUpdated.setMision(this.mision);
+
+                this.general.paintMissionLayer("comando", this.mision);
+                this.enviarMensaje(misionUpdated);
+
+                if (this.general.getIdAeronave() != null) {
+                    Aeronave aeronave = this.mision.get(this.general.getIdAeronave());
+
+                    //getting the panel from the General_GUI where is showing the updated information
+                    InformationAirship info = general.getControlPanel();
+                    
+                    double altitud = Double.parseDouble(aeronave.getPosicion().getAltitud());
+                    double altura = Double.parseDouble(aeronave.getPosicion().getAltura());
+                    
+                    DecimalFormat decimalE = new DecimalFormat("#.#");
+                    
+                    //Showing the information in the jpanel
+                    info.setTextTextField(aeronave.getMatricula());
+                    info.getMgrsLabel().setText("MGRS: " + aeronave.getPosicion().getMgrs() + "         ");
+                    info.getAlturaLabel().setText("Altura: " + aeronave.getPosicion().getAltura() + " mts.");
+                    info.getAltitudLabel().setText("Altitud: " + aeronave.getPosicion().getAltitud() + " mts.");
+                    info.getLongitudLabel().setText("Longitud: " + aeronave.getPosicion().getLongitud());
+                    info.getLatitudLabel().setText("Latitud: " + aeronave.getPosicion().getLatitud());
+                    info.getVelocidadLabel().setText("Velocidad: " + aeronave.getPosicion().getVelocidad() + " m/s");
+                    info.getElevacion().setText(decimalE.format(altitud-altura) + " mts.");
+                }
             }
+
         } catch (JMSException ex) {
             Logger.getLogger(Publicador.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -34,7 +34,7 @@ public class ScrollPanel extends JScrollPane{
     private void initComponents(){
         if (xPosition == 185 && yPosition == 145) {
             this.setSize(135, 85);
-        } else {// otherwise
+        } else {
             this.setSize(226, 85);
         }     
         this.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
@@ -43,6 +43,6 @@ public class ScrollPanel extends JScrollPane{
         this.setVisible(false);
         this.getVerticalScrollBar().setPreferredSize (new Dimension(0,0));
     }
-    
+   
     
 }
