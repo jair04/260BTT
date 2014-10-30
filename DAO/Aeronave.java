@@ -44,6 +44,8 @@ public class Aeronave implements Serializable {
     List<PuntoInteres> puntosInteres;
     
     private int counter;
+    
+    private String pathMap;
 
     public Aeronave() {
         this.puntosInteres = new ArrayList<>();
@@ -107,6 +109,15 @@ public class Aeronave implements Serializable {
     public void setCounter(int counter) {
         this.counter = counter;
     }
+
+    public String getPathMap() {
+        return pathMap;
+    }
+
+    public void setPathMap(String pathMap) {
+        this.pathMap = pathMap;
+    }
+    
     
     
 
@@ -192,6 +203,9 @@ public class Aeronave implements Serializable {
             
             line = br.readLine();
             this.setCounter(Integer.parseInt(line));
+            
+            line = br.readLine();
+            this.setPathMap(line);
             
             this.setPiloto(pilotoAux);           
         }

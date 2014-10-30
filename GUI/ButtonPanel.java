@@ -52,6 +52,7 @@ public class ButtonPanel extends JPanel {
     private final String iconImageEvent;
     private JFileChooser chooser;
     private static String choosertitle = "";
+    private JPanel panel;
 
     public ButtonPanel(final String image, int x, int y, JScrollPane submenu) throws IOException {
         this.image = image;
@@ -133,6 +134,7 @@ public class ButtonPanel extends JPanel {
         } else if (this.image.equals("camera")) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
             Date date = new Date();
+            JPanel panelChooser = new JPanel();
 
             if (choosertitle.equals("")) {
                 chooser = new JFileChooser();
@@ -143,7 +145,7 @@ public class ButtonPanel extends JPanel {
                 // disable the "All files" option.
                 chooser.setAcceptAllFileFilterUsed(false);
 
-                if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                if (chooser.showOpenDialog(panelChooser) == JFileChooser.APPROVE_OPTION) {
                     choosertitle = chooser.getSelectedFile() + "";
                 }
             }
@@ -155,6 +157,8 @@ public class ButtonPanel extends JPanel {
             imageLabel.setIcon(new ImageIcon(iconImageEvent + image + ".png"));
             this.state = -1;
 
+        }else if(this.image.equals("map")){
+            this.panel.setVisible(true);
         } else {
             submenu.setVisible(true);
         }
@@ -164,6 +168,10 @@ public class ButtonPanel extends JPanel {
     public void hideSubmenu() {
         if (submenu != null) {
             submenu.setVisible(false);
+        }
+        
+        if(this.panel != null){
+            this.panel.setVisible(false);
         }
     }
 
@@ -187,4 +195,13 @@ public class ButtonPanel extends JPanel {
         this.submenu = submenu;
     }
 
+    public JPanel getPanel() {
+        return panel;
+    }
+
+    public void setPanel(JPanel panel) {
+        this.panel = panel;
+    }
+
+    
 }

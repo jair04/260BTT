@@ -5,18 +5,29 @@
  */
 package GUI;
 
+import DAO.DEM;
 import com.esri.core.geometry.Point;
+import com.esri.core.geometry.Polyline;
+import com.esri.core.map.Graphic;
+import com.esri.core.symbol.SimpleLineSymbol;
+import com.esri.map.GraphicsLayer;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.awt.Toolkit;
+import javax.swing.JOptionPane;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
  *
  * @author Jair
  */
-public class AddPointFrameAirship extends javax.swing.JFrame {
+public class AddPointFrameAirship extends javax.swing.JFrame implements Runnable {
 
     /**
      * Creates new form addPointFrame
@@ -25,7 +36,9 @@ public class AddPointFrameAirship extends javax.swing.JFrame {
     private final int yPoint;
     private final General_GUI general;
     private final Point point;
-    private static int counter=0;
+    private static int counter = 0;
+    private double m;
+    private DEM dem;
 
     public AddPointFrameAirship(int x, int y, General_GUI general, Point point) {
         this.xPoint = x;
@@ -34,8 +47,9 @@ public class AddPointFrameAirship extends javax.swing.JFrame {
         this.point = point;
 
         this.setUndecorated(true);
-        this.setPreferredSize(new Dimension(156, 92));
+        this.setPreferredSize(new Dimension(156, 134));
         this.setLocation(this.xPoint + 15, this.yPoint + 5);
+        this.dem = new DEM(general.getMap());
 
         initComponents();
     }
@@ -49,12 +63,17 @@ public class AddPointFrameAirship extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel5 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.Y_AXIS));
 
         jPanel2.setBackground(new java.awt.Color(102, 102, 102));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
@@ -91,6 +110,8 @@ public class AddPointFrameAirship extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jPanel5.add(jPanel2);
+
         jPanel1.setBackground(new java.awt.Color(102, 102, 102));
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
@@ -103,8 +124,8 @@ public class AddPointFrameAirship extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Archivos/Imagenes/cancela.png"))); // NOI18N
-        jLabel1.setText(" Cancelar");
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Archivos/Imagenes/markPoin.png"))); // NOI18N
+        jLabel1.setText("WayPoint");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -112,29 +133,60 @@ public class AddPointFrameAirship extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel1)
-                .addGap(0, 67, Short.MAX_VALUE))
+                .addGap(0, 60, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel5.add(jPanel1);
+
+        jPanel6.setBackground(new java.awt.Color(102, 102, 102));
+        jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        jPanel6.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel6.setPreferredSize(new java.awt.Dimension(156, 43));
+        jPanel6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPanel6MouseClicked(evt);
+            }
+        });
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Archivos/Imagenes/cancela.png"))); // NOI18N
+        jLabel5.setText(" Cancelar");
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addComponent(jLabel5)
+                .addGap(0, 67, Short.MAX_VALUE))
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5)
                 .addContainerGap(13, Short.MAX_VALUE))
         );
+
+        jPanel5.add(jPanel6);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -152,7 +204,7 @@ public class AddPointFrameAirship extends javax.swing.JFrame {
 
     //Pressed mouse: marcarPunto
     private void jPanel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel2MouseClicked
-        this.general.addGraphicPointAirShip(point,Color.BLUE,counter+"");
+        this.general.addGraphicPointAirShip(point, Color.BLUE, counter + "");
         this.setVisible(false);
         counter++;
     }//GEN-LAST:event_jPanel2MouseClicked
@@ -160,12 +212,98 @@ public class AddPointFrameAirship extends javax.swing.JFrame {
     //Pressed mouse: cancelar
     private void jPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseClicked
         this.setVisible(false);
+        (new Thread(new AddPointFrameAirship(this.xPoint, this.yPoint, this.general, this.point))).start();
     }//GEN-LAST:event_jPanel1MouseClicked
+
+
+    private void jPanel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel6MouseClicked
+        this.setVisible(false);
+    }//GEN-LAST:event_jPanel6MouseClicked
+
+    private double pendiente(Point p1, Point p2) {
+        return (p2.getY() - p1.getY()) / (p2.getX() - p1.getX());
+    }
+
+    private double fx(double x) {
+        return this.m * (x - this.point.getX()) + this.point.getY();
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void run() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = (int) screenSize.getWidth() - 120;
+
+        DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+
+        // Creando el Grafico
+        if (this.general.getActualPoint() != null) {
+            //create a line symbol (green, 3 thick and a dash style)
+            SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.magenta, 3, SimpleLineSymbol.Style.DASH);
+
+            //create the line geometry
+            Point actualPoint = this.general.getActualPoint();
+            Polyline lineGeometry = new Polyline();
+            lineGeometry.startPath(actualPoint);
+            lineGeometry.lineTo(this.point);
+
+            this.m = this.pendiente(actualPoint, point);
+            double x1, x2;
+
+            if (actualPoint.getX() <= this.point.getX()) {
+                x1 = actualPoint.getX();
+                x2 = this.point.getX();
+            } else {
+                x1 = this.point.getX();
+                x2 = actualPoint.getX();
+            }
+            Point newPoint = new Point();
+            int i = 1;
+
+            for (double x = x1; x <= x2; x = x + 500) {
+                newPoint.setX(x);
+                newPoint.setY(this.fx(x));
+
+                line_chart_dataset.addValue(Integer.parseInt(this.dem.getPixelElevationValue(newPoint)), "", i + "");
+                i++;
+            }
+
+            //create the graphic using the geometry and the symbol
+            Graphic lineGraphic = new Graphic(lineGeometry, lineSymbol);
+            ((GraphicsLayer) this.general.getMap().getLayers().get(4)).addGraphic(lineGraphic);
+
+            JFreeChart chart = ChartFactory.createLineChart("",
+                    "", "Elevacion", line_chart_dataset, PlotOrientation.VERTICAL,
+                    true, true, false);
+
+            CategoryPlot plot = (CategoryPlot) chart.getPlot();
+            plot.setBackgroundPaint(new Color(255, 255, 255));
+            plot.setRangeGridlinePaint(Color.lightGray);
+            plot.setOutlinePaint(Color.BLACK);
+
+            // Mostrar Grafico
+            ChartPanel chartPanel = new ChartPanel(chart);
+            chartPanel.setPreferredSize(new Dimension(width, 204));
+            ((Aeronave_GUI) this.general).getProfiles().add(chartPanel);
+            ((Aeronave_GUI) this.general).getProfiles().repaint();
+            ((Aeronave_GUI) this.general).getProfiles().setVisible(true);
+
+        } else {
+            this.setVisible(false);
+            JOptionPane.showMessageDialog(null, "No hay ubicacion");
+        }
+    }
 }

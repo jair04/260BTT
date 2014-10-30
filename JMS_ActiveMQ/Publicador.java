@@ -50,7 +50,7 @@ public class Publicador implements MessageListener {
     private final String ip;
     HashMap<String, Aeronave> mision = new HashMap<>();
     private final General_GUI general;
-    private final Color[] color = {Color.RED,Color.YELLOW,Color.MAGENTA, Color.GREEN,Color.ORANGE, Color.LIGHT_GRAY};
+    private final Color[] color = {Color.RED,Color.YELLOW,Color.ORANGE,Color.pink,Color.MAGENTA, Color.GREEN, Color.LIGHT_GRAY};
     private int i = 0;
 
     /*

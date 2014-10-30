@@ -30,9 +30,15 @@ import com.esri.map.GraphicsLayer;
 import com.esri.map.JMap;
 import java.awt.Color;
 import java.awt.Toolkit;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,8 +59,9 @@ public class GeoPositionListener implements GPSEventListener {
 
     Consumidor consumidor;
     JMap map;
+    BufferedWriter salida;
 
-    public GeoPositionListener(General_GUI generalGUI) {
+    public GeoPositionListener(General_GUI generalGUI) throws IOException {
 
         this.generalGUI = generalGUI;
         this.aeronaveGUI = (Aeronave_GUI) generalGUI;
@@ -62,6 +69,15 @@ public class GeoPositionListener implements GPSEventListener {
         this.jMap = generalGUI.getMap();
         this.gpsLayer = generalGUI.getGpsLayer();
         this.consumidor = aeronaveGUI.getConsumidor();
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        Date date = new Date();
+
+        this.salida = new BufferedWriter(new FileWriter(new java.io.File(".").getCanonicalPath() + "\\build\\classes\\Archivos\\GPS\\NMEA_"+dateFormat.format(date)+".txt"));
+    }
+
+    public void stop() throws IOException {
+        this.salida.close();
     }
 
     @Override
@@ -70,6 +86,13 @@ public class GeoPositionListener implements GPSEventListener {
 
     @Override
     public void onNMEASentenceReceived(String string) {
+        try {
+            this.salida.write(string);
+            this.salida.newLine();
+        } catch (IOException ex) {
+            Logger.getLogger(GeoPositionListener.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     @Override
@@ -85,10 +108,10 @@ public class GeoPositionListener implements GPSEventListener {
         if (newPosition != null) {
             // Changing reference to mapPoint
             Point point = new Point(newPosition.getLocation().getLongitude(), newPosition.getLocation().getLatitude());
-            Point mapPoint = (Point) GeometryEngine.project(point, SpatialReference.create(4326), jMap.getSpatialReference());          
-            
+            Point mapPoint = (Point) GeometryEngine.project(point, SpatialReference.create(4326), jMap.getSpatialReference());
+
             //getting the panel from the General_GUI where is showing the updated information
-            InformationAirship info = generalGUI.getControlPanel();            
+            InformationAirship info = generalGUI.getControlPanel();
 
             String mgrs = CoordinateConversion.pointToMgrs(mapPoint, jMap.getSpatialReference(), CoordinateConversion.MGRSConversionMode.AUTO, 3, true, true);
             String altura = getPixelElevationValue(mapPoint);
@@ -113,10 +136,10 @@ public class GeoPositionListener implements GPSEventListener {
                 try {
                     aeronaveUpdated.readFileInformation();
                     aeronaveUpdated.setPosicion(updatedPosition);
-                    
+
                     aeronaveUpdated.setPuntosInteres(generalGUI.getPuntosInteres());
                     generalGUI.setPuntosInteres(new ArrayList<PuntoInteres>());
-                    
+
                     Mensaje updateData = new Mensaje(Constante.ACTUALIZAR_AERONAVE, aeronaveUpdated);
                     this.consumidor.sendMessage(updateData);
                 } catch (IOException | JMSException | InterruptedException ex) {

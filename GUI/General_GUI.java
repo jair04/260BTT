@@ -16,6 +16,7 @@ import DAO.PuntoInteres;
 import JMS_ActiveMQ.Publicador;
 import SIG_ArcGIS.MouseClickedOverlay;
 import com.esri.client.local.ArcGISLocalDynamicMapServiceLayer;
+import com.esri.client.local.ArcGISLocalTiledLayer;
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Point;
@@ -38,6 +39,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -52,9 +54,11 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -114,7 +118,7 @@ public abstract class General_GUI {
     private InformationAirship panelInformation;
 
     //Graphic Layer
-    protected GraphicsLayer graphicsLayer;
+    protected GraphicsLayer graphicsLayer, graphicsPath;
 
     //Graphic Layer update airships
     protected GraphicsLayer graphicsLayerAirship;
@@ -127,11 +131,13 @@ public abstract class General_GUI {
 
     //user selected 
     protected String idAeronave;
-    
+
     //message publisher 
     protected Publicador publicador;
-    
+
     protected HashMap<String, Aeronave> mision;
+
+    protected Point actualPoint;
 
     // ------------------------------------------------------------------------
     // Constructors
@@ -303,750 +309,874 @@ public abstract class General_GUI {
     }
 
     protected final JScrollPane getDocuments_submenu() {
-       List<JComponent> components = new ArrayList<>();
-        
+        List<JComponent> components = new ArrayList<>();
+
         final JCheckBox a1 = new JCheckBox("Acapulco" + offset);
-        a1.addMouseListener(new MouseAdapter(){
+        a1.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a1.isSelected()){
-                    try{
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a1.isSelected()) {
+                    try {
                         createPDF_Viewer("ACA.pdf", "Acapulco");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
 
         final JCheckBox a2 = new JCheckBox("Aguascalientes" + offset);
-        a2.addMouseListener(new MouseAdapter(){
+        a2.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a2.isSelected()){
-                    try{
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a2.isSelected()) {
+                    try {
                         createPDF_Viewer("AGU.pdf", "Aguascalientes");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a3 = new JCheckBox("Leon" + offset);
-        a3.addMouseListener(new MouseAdapter(){
+        a3.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a3.isSelected()){
-                    try{
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a3.isSelected()) {
+                    try {
                         createPDF_Viewer("BJX.pdf", "Leon");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a4 = new JCheckBox("Cabo San Lucas" + offset);
-        a4.addMouseListener(new MouseAdapter(){
+        a4.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a4.isSelected()){
-                    try{
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a4.isSelected()) {
+                    try {
                         createPDF_Viewer("CBS.pdf", "Cabo San Lucas");
-                    }catch (IOException ex){ 
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a5 = new JCheckBox("Ciudad Obregon" + offset);
-        a5.addMouseListener(new MouseAdapter(){
+        a5.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a5.isSelected()){
-                    try{
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a5.isSelected()) {
+                    try {
                         createPDF_Viewer("CEN.pdf", "Ciudad Obregon");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}    
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a6 = new JCheckBox("Ciudad Juarez" + offset);
-        a6.addMouseListener(new MouseAdapter(){
+        a6.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a6.isSelected()){
-                    try{
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a6.isSelected()) {
+                    try {
                         createPDF_Viewer("CJS.pdf", "Ciudad Juarez");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a7 = new JCheckBox("Colima" + offset);
-        a7.addMouseListener(new MouseAdapter(){
+        a7.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a7.isSelected()){
-                    try{
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a7.isSelected()) {
+                    try {
                         createPDF_Viewer("CLQ.pdf", "Colima");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a8 = new JCheckBox("Ciudad del Carmen" + offset);
-        a8.addMouseListener(new MouseAdapter(){
+        a8.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a8.isSelected()){
-                    try{
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a8.isSelected()) {
+                    try {
                         createPDF_Viewer("CME.pdf", "Ciudad del Carmen");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a9 = new JCheckBox("Campeche" + offset);
-        a9.addMouseListener(new MouseAdapter(){
+        a9.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a9.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a9.isSelected()) {
                     try {
                         createPDF_Viewer("CPE.pdf", "Ciudad del Carmen");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a10 = new JCheckBox("Chetumal" + offset);
-        a10.addMouseListener(new MouseAdapter(){
+        a10.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a10.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a10.isSelected()) {
                     try {
                         createPDF_Viewer("CTM.pdf", "Chetumal");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a11 = new JCheckBox("Culiacan" + offset);
-        a11.addMouseListener(new MouseAdapter(){
+        a11.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a11.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a11.isSelected()) {
                     try {
                         createPDF_Viewer("CUL.pdf", "Culiacan");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a12 = new JCheckBox("Cancun" + offset);
-        a12.addMouseListener(new MouseAdapter(){
+        a12.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a12.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a12.isSelected()) {
                     try {
                         createPDF_Viewer("CUN.pdf", "Cancun");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a13 = new JCheckBox("Chihuaha" + offset);
-        a13.addMouseListener(new MouseAdapter(){
+        a13.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a13.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a13.isSelected()) {
                     try {
                         createPDF_Viewer("CUU.pdf", "Chihuaha");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a14 = new JCheckBox("Cuernavaca" + offset);
-        a14.addMouseListener(new MouseAdapter(){
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a14.isSelected()){
+        a14.addMouseListener(new MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a14.isSelected()) {
                     try {
                         createPDF_Viewer("CVJ.pdf", "Cuernavaca");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a15 = new JCheckBox("Ciudad Vitoria" + offset);
-        a15.addMouseListener(new MouseAdapter(){
+        a15.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a15.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a15.isSelected()) {
                     try {
                         createPDF_Viewer("CVM.pdf", "Ciudad Vitoria");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a16 = new JCheckBox("Chichen-Itza" + offset);
-        a16.addMouseListener(new MouseAdapter(){
+        a16.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a16.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a16.isSelected()) {
                     try {
                         createPDF_Viewer("CZA.pdf", "Chichen-Itza");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a17 = new JCheckBox("Cozumel" + offset);
-        a17.addMouseListener(new MouseAdapter(){
+        a17.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a17.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a17.isSelected()) {
                     try {
                         createPDF_Viewer("CZM.pdf", "Cozumel");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a18 = new JCheckBox("Durango" + offset);
-        a18.addMouseListener(new MouseAdapter(){
+        a18.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a18.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a18.isSelected()) {
                     try {
                         createPDF_Viewer("DGO.pdf", "Durango");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a19 = new JCheckBox("Ensenada" + offset);
-        a19.addMouseListener(new MouseAdapter(){
+        a19.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a19.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a19.isSelected()) {
                     try {
                         createPDF_Viewer("ESE.pdf", "Ensenada");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a20 = new JCheckBox("Guadalajara" + offset);
-        a20.addMouseListener(new MouseAdapter(){
+        a20.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a20.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a20.isSelected()) {
                     try {
                         createPDF_Viewer("GDL.pdf", "Guadalajara");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a21 = new JCheckBox("Guaymas" + offset);
-        a21.addMouseListener(new MouseAdapter(){
+        a21.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a21.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a21.isSelected()) {
                     try {
                         createPDF_Viewer("GYM.pdf", "Guaymas");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a22 = new JCheckBox("Hermosillo" + offset);
-        a22.addMouseListener(new MouseAdapter(){
+        a22.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a22.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a22.isSelected()) {
                     try {
                         createPDF_Viewer("HMO.pdf", "Hermosillo");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
         final JCheckBox a23 = new JCheckBox("Bahias de Huatulco" + offset);
-        a23.addMouseListener(new MouseAdapter(){
+        a23.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a23.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a23.isSelected()) {
                     try {
                         createPDF_Viewer("HUX.pdf", "Bahias de Huatulco");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a24 = new JCheckBox("La Paz" + offset);
-        a24.addMouseListener(new MouseAdapter(){
+        a24.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a24.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a24.isSelected()) {
                     try {
                         createPDF_Viewer("LAP.pdf", "La Paz");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a25 = new JCheckBox("Los Mochis" + offset);
-        a25.addMouseListener(new MouseAdapter(){
+        a25.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a25.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a25.isSelected()) {
                     try {
                         createPDF_Viewer("LMM.pdf", "Los Mochis");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a26 = new JCheckBox("Monclova" + offset);
-        a26.addMouseListener(new MouseAdapter(){
+        a26.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a26.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a26.isSelected()) {
                     try {
                         createPDF_Viewer("LOV.pdf", "Monclova");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a27 = new JCheckBox("Loreto" + offset);
-        a27.addMouseListener(new MouseAdapter(){
+        a27.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a27.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a27.isSelected()) {
                     try {
                         createPDF_Viewer("LTO.pdf", "Loreto");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a28 = new JCheckBox("Matamoros" + offset);
-        a28.addMouseListener(new MouseAdapter(){
+        a28.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a28.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a28.isSelected()) {
                     try {
                         createPDF_Viewer("MAM.pdf", "Matamoros");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a29 = new JCheckBox("Ciudad de Mexico" + offset);
-        a29.addMouseListener(new MouseAdapter(){
+        a29.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a29.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a29.isSelected()) {
                     try {
                         createPDF_Viewer("MEX.pdf", "Ciudad de Mexico");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a30 = new JCheckBox("Merida" + offset);
-        a30.addMouseListener(new MouseAdapter(){
+        a30.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a30.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a30.isSelected()) {
                     try {
                         createPDF_Viewer("MID.pdf", "Merida");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a31 = new JCheckBox("Morelia" + offset);
-        a31.addMouseListener(new MouseAdapter(){
+        a31.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a31.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a31.isSelected()) {
                     try {
                         createPDF_Viewer("MLM.pdf", "Morelia");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a32 = new JCheckBox("Minatitlan" + offset);
-        a32.addMouseListener(new MouseAdapter(){
+        a32.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a32.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a32.isSelected()) {
                     try {
                         createPDF_Viewer("MTT.pdf", "Minatitlan");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a33 = new JCheckBox("Monterrey" + offset);
-        a33.addMouseListener(new MouseAdapter(){
+        a33.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a33.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a33.isSelected()) {
                     try {
                         createPDF_Viewer("MTY.pdf", "Monterrey");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a34 = new JCheckBox("Mexicali" + offset);
-        a34.addMouseListener(new MouseAdapter(){
+        a34.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a34.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a34.isSelected()) {
                     try {
                         createPDF_Viewer("MXL.pdf", "Mexicali");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a35 = new JCheckBox("Mazatlan" + offset);
-        a35.addMouseListener(new MouseAdapter(){
+        a35.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a35.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a35.isSelected()) {
                     try {
                         createPDF_Viewer("MZT.pdf", "Mazatlan");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a36 = new JCheckBox("Nuevo Laredo" + offset);
-        a36.addMouseListener(new MouseAdapter(){
+        a36.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a36.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a36.isSelected()) {
                     try {
                         createPDF_Viewer("NLD.pdf", "Nuevo Laredo");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a37 = new JCheckBox("Monterrey" + offset);
-        a37.addMouseListener(new MouseAdapter(){
+        a37.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a37.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a37.isSelected()) {
                     try {
                         createPDF_Viewer("NTR.pdf", "Monterrey");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a38 = new JCheckBox("Oaxaca" + offset);
-        a38.addMouseListener(new MouseAdapter(){
+        a38.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a38.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a38.isSelected()) {
                     try {
                         createPDF_Viewer("OAX.pdf", "Oaxaca");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a39 = new JCheckBox("Poza Rica" + offset);
-        a39.addMouseListener(new MouseAdapter(){
+        a39.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a39.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a39.isSelected()) {
                     try {
                         createPDF_Viewer("PAZ.pdf", "Poza Rica");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a40 = new JCheckBox("Puebla" + offset);
-        a40.addMouseListener(new MouseAdapter(){
+        a40.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a40.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a40.isSelected()) {
                     try {
                         createPDF_Viewer("PBC.pdf", "Puebla");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a41 = new JCheckBox("Piedras Negras" + offset);
-        a4.addMouseListener(new MouseAdapter(){
+        a4.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a41.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a41.isSelected()) {
                     try {
                         createPDF_Viewer("PNG.pdf", "Piedras Negras");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a42 = new JCheckBox("Puerto Peñasco" + offset);
-        a42.addMouseListener(new MouseAdapter(){
+        a42.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a42.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a42.isSelected()) {
                     try {
                         createPDF_Viewer("PPE.pdf", "Puerto Peñasco");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a43 = new JCheckBox("Puerto Vallarta" + offset);
-        a43.addMouseListener(new MouseAdapter(){
+        a43.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a43.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a43.isSelected()) {
                     try {
                         createPDF_Viewer("PVR.pdf", "Puerto Vallarta");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a44 = new JCheckBox("Puerto Escondido" + offset);
-        a44.addMouseListener(new MouseAdapter(){
+        a44.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a44.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a44.isSelected()) {
                     try {
                         createPDF_Viewer("PXM.pdf", "Puerto Escondido");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a45 = new JCheckBox("Queretaro" + offset);
-        a45.addMouseListener(new MouseAdapter(){
+        a45.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a45.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a45.isSelected()) {
                     try {
                         createPDF_Viewer("QRO.pdf", "Queretaro");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
 
         final JCheckBox a46 = new JCheckBox("Reynoa" + offset);
-        a46.addMouseListener(new MouseAdapter(){
+        a46.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a46.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a46.isSelected()) {
                     try {
                         createPDF_Viewer("REX.pdf", "Reynoa");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a47 = new JCheckBox("San Jose del Cabo" + offset);
-        a47.addMouseListener(new MouseAdapter(){
+        a47.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a47.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a47.isSelected()) {
                     try {
                         createPDF_Viewer("SJD.pdf", "San Jose del Cabo");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a48 = new JCheckBox("Saltillo" + offset);
-        a48.addMouseListener(new MouseAdapter(){
+        a48.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a48.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a48.isSelected()) {
                     try {
                         createPDF_Viewer("SLW.pdf", "Saltillo");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a49 = new JCheckBox("Tampico" + offset);
-        a49.addMouseListener(new MouseAdapter(){
+        a49.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a49.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a49.isSelected()) {
                     try {
                         createPDF_Viewer("TAM.pdf", "Tampico");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a50 = new JCheckBox("Tapachula" + offset);
-        a50.addMouseListener(new MouseAdapter(){
+        a50.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a50.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a50.isSelected()) {
                     try {
                         createPDF_Viewer("TAP.pdf", "Tapachula");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a51 = new JCheckBox("Tuxtla Gutierrez" + offset);
-        a51.addMouseListener(new MouseAdapter(){
+        a51.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a51.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a51.isSelected()) {
                     try {
                         createPDF_Viewer("TGZ.pdf", "Tuxtla Gutierrez");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a52 = new JCheckBox("Tijuana" + offset);
-        a52.addMouseListener(new MouseAdapter(){
+        a52.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a52.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a52.isSelected()) {
                     try {
                         createPDF_Viewer("TIJ.pdf", "Tijuana");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a53 = new JCheckBox("Toluca" + offset);
-        a53.addMouseListener(new MouseAdapter(){
+        a53.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a53.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a53.isSelected()) {
                     try {
                         createPDF_Viewer("TLC.pdf", "Toluca");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a54 = new JCheckBox("Tepic" + offset);
-        a54.addMouseListener(new MouseAdapter(){
+        a54.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a54.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a54.isSelected()) {
                     try {
                         createPDF_Viewer("TPQ.pdf", "Tepic");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a55 = new JCheckBox("Torreon" + offset);
-        a55.addMouseListener(new MouseAdapter(){
+        a55.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a55.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a55.isSelected()) {
                     try {
                         createPDF_Viewer("TRC.pdf", "Torreon");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a56 = new JCheckBox("Tamuin" + offset);
-        a56.addMouseListener(new MouseAdapter(){
+        a56.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a56.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a56.isSelected()) {
                     try {
                         createPDF_Viewer("TSL.pdf", "Tamuin");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a57 = new JCheckBox("Uruapan" + offset);
-        a57.addMouseListener(new MouseAdapter(){
+        a57.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a57.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a57.isSelected()) {
                     try {
                         createPDF_Viewer("UPN.pdf", "Uruapan");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a58 = new JCheckBox("Veracuz" + offset);
-        a58.addMouseListener(new MouseAdapter(){
+        a58.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a58.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a58.isSelected()) {
                     try {
                         createPDF_Viewer("VER.pdf", "Veracuz");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a59 = new JCheckBox("Villa Hermosa" + offset);
-        a59.addMouseListener(new MouseAdapter(){
+        a59.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a59.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a59.isSelected()) {
                     try {
                         createPDF_Viewer("VSA.pdf", "Villa Hermosa");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a60 = new JCheckBox("Zacatecas" + offset);
-        a60.addMouseListener(new MouseAdapter(){
+        a60.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a60.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a60.isSelected()) {
                     try {
                         createPDF_Viewer("ZCL.pdf", "Zacatecas");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a61 = new JCheckBox("Ixtapa-Zihuatanejo" + offset);
-        a61.addMouseListener(new MouseAdapter(){
+        a61.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a61.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a61.isSelected()) {
                     try {
                         createPDF_Viewer("ZIH.pdf", "Ixtapa-Zihuatanejo");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         final JCheckBox a62 = new JCheckBox("Manzanillo" + offset);
-        a62.addMouseListener(new MouseAdapter(){
+        a62.addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent evt){
-                if(!a62.isSelected()){
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                if (!a62.isSelected()) {
                     try {
                         createPDF_Viewer("ZLO.pdf", "Manzanillo");
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         Logger.getLogger(General_GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    }}}
+                    }
+                }
+            }
         });
-        
+
         components.add(a1);
         components.add(a2);
         components.add(a3);
@@ -1111,16 +1241,15 @@ public abstract class General_GUI {
         components.add(a60);
         components.add(a61);
         components.add(a62);
-        
+
         return new ScrollPanel(this.createSubmenu_panel(components, true), 95, 415);
     }
-    
+
     //Create PDF Viewer
-    protected ShowerPDF createPDF_Viewer(String path, String title) throws IOException
-    {
+    protected ShowerPDF createPDF_Viewer(String path, String title) throws IOException {
         ShowerPDF pdf = new ShowerPDF(new java.io.File(".").getCanonicalPath() + "\\build\\classes\\Archivos\\Documentos\\" + path);
         Dimension pantalla = Toolkit.getDefaultToolkit().getScreenSize();
-        pdf.setBounds(0, 0, pantalla.height, pantalla.width/2);
+        pdf.setBounds(0, 0, pantalla.height, pantalla.width / 2);
         pdf.setTitle(title);
         pdf.setLocationRelativeTo(null);
         pdf.setVisible(true);
@@ -1170,7 +1299,7 @@ public abstract class General_GUI {
         this.puntosInteres.add(new PuntoInteres(simbolText, posicion, 0));
 
     }
-    
+
     //method which paints mark points
     public void addGraphicPointCommand(Point point, Color color, String simbolText) {
         this.graphicsLayer.setVisible(true);
@@ -1189,7 +1318,7 @@ public abstract class General_GUI {
     public void paintMissionLayer(String anfitrion, HashMap<String, Aeronave> mision) {
 
         this.mision = mision;
-        
+
         this.graphicsLayerAirship.removeAll();
         SimpleMarkerSymbol circle;
         Aeronave aeronave;
@@ -1287,6 +1416,7 @@ public abstract class General_GUI {
      * @return a map.
      */
     private JMap createMap() throws Exception {
+
         //final map
         JMap jMap = new JMap();
 
@@ -1296,28 +1426,66 @@ public abstract class General_GUI {
         //Layer lists
         layersList = jMap.getLayers();
 
+        Object[] options = {"REMOTO", "LOCAL"};
+        String input = (String) JOptionPane.showInputDialog(null, "Tipo de mapa base:", "Base map", JOptionPane.QUESTION_MESSAGE, null, options, "REMOTO");
+
         //Base map Layer: 0
-        final ArcGISTiledMapServiceLayer baseLayer = new ArcGISTiledMapServiceLayer(URL_WORLD_BASEMAP);
-        layersList.add(baseLayer);
+        if (input == "LOCAL") {
+            JFileChooser chooser = new JFileChooser();
+            JPanel p = new JPanel();
+            String choosertitle = "";
+
+            chooser.setDialogTitle(choosertitle);
+            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+            // disable the "All files" option.
+            chooser.setAcceptAllFileFilterUsed(false);
+
+            if (chooser.showOpenDialog(p) == JFileChooser.APPROVE_OPTION) {
+                choosertitle = chooser.getSelectedFile() + "";
+                final ArcGISLocalTiledLayer tiledLayer = new ArcGISLocalTiledLayer(choosertitle);
+                jMap.getLayers().add(tiledLayer);
+            } else {
+                final ArcGISTiledMapServiceLayer baseLayer = new ArcGISTiledMapServiceLayer(URL_WORLD_BASEMAP);
+                layersList.add(baseLayer);
+            }
+        } else if (input == "REMOTO" || input == null) {
+            final ArcGISTiledMapServiceLayer baseLayer = new ArcGISTiledMapServiceLayer(URL_WORLD_BASEMAP);
+            layersList.add(baseLayer);
+        }
 
         //Dinamic Layer(Digital Elevation Model) : 1
         String path = this.currentPath + "\\build\\classes\\Archivos\\Mapas\\mapa.mpk";
         dynamicLayer = new ArcGISLocalDynamicMapServiceLayer(path);
-        dynamicLayer.setOpacity(0.5f);
+
+        dynamicLayer.setOpacity(
+                0.5f);
         layersList.add(dynamicLayer);
 
         //Graphics Layer : 2
         this.graphicsLayer = new GraphicsLayer();
-        layersList.add(this.graphicsLayer);
+
+        layersList.add(
+                this.graphicsLayer);
 
         //Graphic Layer Airships: 3
         this.graphicsLayerAirship = new GraphicsLayer();
-        layersList.add(this.graphicsLayerAirship);
 
-        jMap.getGrid().setType(Grid.GridType.MGRS);
+        layersList.add(
+                this.graphicsLayerAirship);
+
+        //Graphic Layer Airships: 4
+        this.graphicsPath = new GraphicsLayer();
+
+        layersList.add(
+                this.graphicsPath);
+
+        jMap.getGrid()
+                .setType(Grid.GridType.MGRS);
 
         // listen to mouse events for drawing the interesting point. 
-        jMap.addMapOverlay(new MouseClickedOverlay(this, this.typeUser));
+        jMap.addMapOverlay(
+                new MouseClickedOverlay(this, this.typeUser));
         return jMap;
     }
 
@@ -1396,7 +1564,21 @@ public abstract class General_GUI {
     public void setMision(HashMap<String, Aeronave> mision) {
         this.mision = mision;
     }
-    
-    
+
+    public GraphicsLayer getGraphicsPath() {
+        return graphicsPath;
+    }
+
+    public void setGraphicsPath(GraphicsLayer graphicsPath) {
+        this.graphicsPath = graphicsPath;
+    }
+
+    public Point getActualPoint() {
+        return actualPoint;
+    }
+
+    public void setActualPoint(Point actualPoint) {
+        this.actualPoint = actualPoint;
+    }
 
 }
